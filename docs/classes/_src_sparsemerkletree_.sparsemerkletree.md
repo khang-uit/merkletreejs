@@ -1,0 +1,1563 @@
+[merkletreejs](../README.md) › [Globals](../globals.md) › ["src/SparseMerkleTree"](../modules/_src_sparsemerkletree_.md) › [SparseMerkleTree](_src_sparsemerkletree_.sparsemerkletree.md)
+
+# Class: SparseMerkleTree
+
+Class reprensenting a Merkle Tree
+
+**`namespace`** SparseMerkleTree
+
+## Hierarchy
+
+* [Base](_src_base_.base.md)
+
+  ↳ **SparseMerkleTree**
+
+## Index
+
+### Constructors
+
+* [constructor](_src_sparsemerkletree_.sparsemerkletree.md#constructor)
+
+### Methods
+
+* [addLeaf](_src_sparsemerkletree_.sparsemerkletree.md#addleaf)
+* [addLeaves](_src_sparsemerkletree_.sparsemerkletree.md#addleaves)
+* [bigNumberify](_src_sparsemerkletree_.sparsemerkletree.md#bignumberify)
+* [binarySearch](_src_sparsemerkletree_.sparsemerkletree.md#binarysearch)
+* [bufferIndexOf](_src_sparsemerkletree_.sparsemerkletree.md#protected-bufferindexof)
+* [bufferToHex](_src_sparsemerkletree_.sparsemerkletree.md#buffertohex)
+* [bufferify](_src_sparsemerkletree_.sparsemerkletree.md#bufferify)
+* [bufferifyFn](_src_sparsemerkletree_.sparsemerkletree.md#bufferifyfn)
+* [getDepth](_src_sparsemerkletree_.sparsemerkletree.md#getdepth)
+* [getHexLayers](_src_sparsemerkletree_.sparsemerkletree.md#gethexlayers)
+* [getHexLayersFlat](_src_sparsemerkletree_.sparsemerkletree.md#gethexlayersflat)
+* [getHexLeaves](_src_sparsemerkletree_.sparsemerkletree.md#gethexleaves)
+* [getHexMultiProof](_src_sparsemerkletree_.sparsemerkletree.md#gethexmultiproof)
+* [getHexProof](_src_sparsemerkletree_.sparsemerkletree.md#gethexproof)
+* [getHexProofs](_src_sparsemerkletree_.sparsemerkletree.md#gethexproofs)
+* [getHexRoot](_src_sparsemerkletree_.sparsemerkletree.md#gethexroot)
+* [getLayerCount](_src_sparsemerkletree_.sparsemerkletree.md#getlayercount)
+* [getLayers](_src_sparsemerkletree_.sparsemerkletree.md#getlayers)
+* [getLayersAsObject](_src_sparsemerkletree_.sparsemerkletree.md#getlayersasobject)
+* [getLayersFlat](_src_sparsemerkletree_.sparsemerkletree.md#getlayersflat)
+* [getLeaf](_src_sparsemerkletree_.sparsemerkletree.md#getleaf)
+* [getLeafCount](_src_sparsemerkletree_.sparsemerkletree.md#getleafcount)
+* [getLeafIndex](_src_sparsemerkletree_.sparsemerkletree.md#getleafindex)
+* [getLeaves](_src_sparsemerkletree_.sparsemerkletree.md#getleaves)
+* [getMultiProof](_src_sparsemerkletree_.sparsemerkletree.md#getmultiproof)
+* [getOptions](_src_sparsemerkletree_.sparsemerkletree.md#getoptions)
+* [getPositionalHexProof](_src_sparsemerkletree_.sparsemerkletree.md#getpositionalhexproof)
+* [getProof](_src_sparsemerkletree_.sparsemerkletree.md#getproof)
+* [getProofFlags](_src_sparsemerkletree_.sparsemerkletree.md#getproofflags)
+* [getProofIndices](_src_sparsemerkletree_.sparsemerkletree.md#getproofindices)
+* [getProofs](_src_sparsemerkletree_.sparsemerkletree.md#getproofs)
+* [getProofsDFS](_src_sparsemerkletree_.sparsemerkletree.md#getproofsdfs)
+* [getRoot](_src_sparsemerkletree_.sparsemerkletree.md#getroot)
+* [isHexString](_src_sparsemerkletree_.sparsemerkletree.md#protected-ishexstring)
+* [isUnevenTree](_src_sparsemerkletree_.sparsemerkletree.md#isuneventree)
+* [linearSearch](_src_sparsemerkletree_.sparsemerkletree.md#linearsearch)
+* [log2](_src_sparsemerkletree_.sparsemerkletree.md#protected-log2)
+* [print](_src_sparsemerkletree_.sparsemerkletree.md#print)
+* [resetTree](_src_sparsemerkletree_.sparsemerkletree.md#resettree)
+* [toString](_src_sparsemerkletree_.sparsemerkletree.md#tostring)
+* [toTreeString](_src_sparsemerkletree_.sparsemerkletree.md#protected-totreestring)
+* [verify](_src_sparsemerkletree_.sparsemerkletree.md#verify)
+* [verifyMultiProof](_src_sparsemerkletree_.sparsemerkletree.md#verifymultiproof)
+* [verifyMultiProofWithFlags](_src_sparsemerkletree_.sparsemerkletree.md#verifymultiproofwithflags)
+* [zip](_src_sparsemerkletree_.sparsemerkletree.md#protected-zip)
+* [bigNumberify](_src_sparsemerkletree_.sparsemerkletree.md#static-bignumberify)
+* [binarySearch](_src_sparsemerkletree_.sparsemerkletree.md#static-binarysearch)
+* [bufferToHex](_src_sparsemerkletree_.sparsemerkletree.md#static-buffertohex)
+* [bufferify](_src_sparsemerkletree_.sparsemerkletree.md#static-bufferify)
+* [getMultiProof](_src_sparsemerkletree_.sparsemerkletree.md#static-getmultiproof)
+* [hexZeroPad](_src_sparsemerkletree_.sparsemerkletree.md#static-hexzeropad)
+* [isHexString](_src_sparsemerkletree_.sparsemerkletree.md#static-ishexstring)
+* [linearSearch](_src_sparsemerkletree_.sparsemerkletree.md#static-linearsearch)
+* [marshalLeaves](_src_sparsemerkletree_.sparsemerkletree.md#static-marshalleaves)
+* [marshalProof](_src_sparsemerkletree_.sparsemerkletree.md#static-marshalproof)
+* [marshalTree](_src_sparsemerkletree_.sparsemerkletree.md#static-marshaltree)
+* [print](_src_sparsemerkletree_.sparsemerkletree.md#static-print)
+* [unmarshalLeaves](_src_sparsemerkletree_.sparsemerkletree.md#static-unmarshalleaves)
+* [unmarshalProof](_src_sparsemerkletree_.sparsemerkletree.md#static-unmarshalproof)
+* [unmarshalTree](_src_sparsemerkletree_.sparsemerkletree.md#static-unmarshaltree)
+* [verify](_src_sparsemerkletree_.sparsemerkletree.md#static-verify)
+
+## Constructors
+
+###  constructor
+
+\+ **new SparseMerkleTree**(`leaves`: any[], `hashFn`: any, `options`: [Options](../interfaces/_src_sparsemerkletree_.options.md)): *[SparseMerkleTree](_src_sparsemerkletree_.sparsemerkletree.md)*
+
+**`desc`** Constructs a Merkle Tree.
+All nodes and leaves are stored as Buffers.
+Lonely leaf nodes are promoted to the next level up without being hashed again.
+
+**`example`** 
+```js
+const SparseMerkleTree = require('Sparsemerkletreejs')
+const crypto = require('crypto')
+
+function sha256(data) {
+ // returns Buffer
+ return crypto.createHash('sha256').update(data).digest()
+}
+
+const leaves = ['a', 'b', 'c'].map(value => keccak(value))
+
+const tree = new SparseMerkleTree(leaves, sha256)
+```
+
+**Parameters:**
+
+Name | Type | Default | Description |
+------ | ------ | ------ | ------ |
+`leaves` | any[] | - | Array of hashed leaves. Each leaf must be a Buffer. |
+`hashFn` | any | SHA256 | - |
+`options` | [Options](../interfaces/_src_sparsemerkletree_.options.md) | {} | Additional options |
+
+**Returns:** *[SparseMerkleTree](_src_sparsemerkletree_.sparsemerkletree.md)*
+
+## Methods
+
+###  addLeaf
+
+▸ **addLeaf**(`leaf`: [TLeaf](../modules/_src_sparsemerkletree_.md#tleaf), `shouldHash`: boolean): *void*
+
+addLeaf
+
+**`desc`** Adds a leaf to the tree and re-calculates layers.
+
+**`example`** 
+```js
+tree.addLeaf(newLeaf)
+```
+
+**Parameters:**
+
+Name | Type | Default |
+------ | ------ | ------ |
+`leaf` | [TLeaf](../modules/_src_sparsemerkletree_.md#tleaf) | - |
+`shouldHash` | boolean | false |
+
+**Returns:** *void*
+
+___
+
+###  addLeaves
+
+▸ **addLeaves**(`leaves`: [TLeaf](../modules/_src_sparsemerkletree_.md#tleaf)[], `shouldHash`: boolean): *void*
+
+addLeaves
+
+**`desc`** Adds multiple leaves to the tree and re-calculates layers.
+
+**`example`** 
+```js
+tree.addLeaves(newLeaves)
+```
+
+**Parameters:**
+
+Name | Type | Default |
+------ | ------ | ------ |
+`leaves` | [TLeaf](../modules/_src_sparsemerkletree_.md#tleaf)[] | - |
+`shouldHash` | boolean | false |
+
+**Returns:** *void*
+
+___
+
+###  bigNumberify
+
+▸ **bigNumberify**(`value`: any): *BigInt*
+
+*Inherited from [Base](_src_base_.base.md).[bigNumberify](_src_base_.base.md#bignumberify)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`value` | any |
+
+**Returns:** *BigInt*
+
+___
+
+###  binarySearch
+
+▸ **binarySearch**(`array`: Buffer[], `element`: Buffer, `compareFunction`: function): *number*
+
+*Inherited from [Base](_src_base_.base.md).[binarySearch](_src_base_.base.md#static-binarysearch)*
+
+binarySearch
+
+**`desc`** Returns the first index of which given item is found in array using binary search.
+
+**`example`** 
+```js
+const index = tree.binarySearch(array, element, Buffer.compare)
+```
+
+**Parameters:**
+
+▪ **array**: *Buffer[]*
+
+Array of items.
+
+▪ **element**: *Buffer*
+
+Item to find.
+
+▪ **compareFunction**: *function*
+
+▸ (`a`: unknown, `b`: unknown): *number*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`a` | unknown |
+`b` | unknown |
+
+**Returns:** *number*
+
+- Index number
+
+___
+
+### `Protected` bufferIndexOf
+
+▸ **bufferIndexOf**(`array`: Buffer[], `element`: Buffer, `isSorted`: boolean): *number*
+
+*Inherited from [Base](_src_base_.base.md).[bufferIndexOf](_src_base_.base.md#protected-bufferindexof)*
+
+bufferIndexOf
+
+**`desc`** Returns the first index of which given buffer is found in array.
+
+**`example`** 
+```js
+const index = tree.bufferIndexOf(haystack, needle)
+```
+
+**Parameters:**
+
+Name | Type | Default |
+------ | ------ | ------ |
+`array` | Buffer[] | - |
+`element` | Buffer | - |
+`isSorted` | boolean | false |
+
+**Returns:** *number*
+
+- Index number
+
+___
+
+###  bufferToHex
+
+▸ **bufferToHex**(`value`: Buffer, `withPrefix`: boolean): *string*
+
+*Inherited from [Base](_src_base_.base.md).[bufferToHex](_src_base_.base.md#buffertohex)*
+
+bufferToHex
+
+**`desc`** Returns a hex string with 0x prefix for given buffer.
+
+**`example`** 
+```js
+const hexStr = tree.bufferToHex(Buffer.from('A'))
+```
+
+**Parameters:**
+
+Name | Type | Default |
+------ | ------ | ------ |
+`value` | Buffer | - |
+`withPrefix` | boolean | true |
+
+**Returns:** *string*
+
+___
+
+###  bufferify
+
+▸ **bufferify**(`value`: any): *Buffer*
+
+*Inherited from [Base](_src_base_.base.md).[bufferify](_src_base_.base.md#static-bufferify)*
+
+bufferify
+
+**`desc`** Returns a buffer type for the given value.
+
+**`example`** 
+```js
+const buf = tree.bufferify('0x1234')
+```
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`value` | any |
+
+**Returns:** *Buffer*
+
+___
+
+###  bufferifyFn
+
+▸ **bufferifyFn**(`f`: any): *any*
+
+*Inherited from [Base](_src_base_.base.md).[bufferifyFn](_src_base_.base.md#bufferifyfn)*
+
+bufferifyFn
+
+**`desc`** Returns a function that will bufferify the return value.
+
+**`example`** 
+```js
+const fn = tree.bufferifyFn((value) => sha256(value))
+```
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`f` | any |
+
+**Returns:** *any*
+
+___
+
+###  getDepth
+
+▸ **getDepth**(): *number*
+
+getDepth
+
+**`desc`** Returns the tree depth (number of layers)
+
+**`example`** 
+```js
+const depth = tree.getDepth()
+```
+
+**Returns:** *number*
+
+___
+
+###  getHexLayers
+
+▸ **getHexLayers**(): *string[][]*
+
+getHexLayers
+
+**`desc`** Returns multi-dimensional array of all layers of Merkle Tree, including leaves and root as hex strings.
+
+**`example`** 
+```js
+const layers = tree.getHexLayers()
+```
+
+**Returns:** *string[][]*
+
+___
+
+###  getHexLayersFlat
+
+▸ **getHexLayersFlat**(): *string[]*
+
+getHexLayersFlat
+
+**`desc`** Returns single flat array of all layers of Merkle Tree, including leaves and root as hex string.
+
+**`example`** 
+```js
+const layers = tree.getHexLayersFlat()
+```
+
+**Returns:** *string[]*
+
+___
+
+###  getHexLeaves
+
+▸ **getHexLeaves**(): *string[]*
+
+getHexLeaves
+
+**`desc`** Returns array of leaves of Merkle Tree as hex strings.
+
+**`example`** 
+```js
+const leaves = tree.getHexLeaves()
+```
+
+**Returns:** *string[]*
+
+___
+
+###  getHexMultiProof
+
+▸ **getHexMultiProof**(`tree`: Buffer[] | string[], `indices`: number[]): *string[]*
+
+getHexMultiProof
+
+**`desc`** Returns the multiproof for given tree indices as hex strings.
+
+**`example`** 
+```js
+const indices = [2, 5, 6]
+const proof = tree.getHexMultiProof(indices)
+```
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`tree` | Buffer[] &#124; string[] | - |
+`indices` | number[] | Tree indices. |
+
+**Returns:** *string[]*
+
+- Multiproofs as hex strings.
+
+___
+
+###  getHexProof
+
+▸ **getHexProof**(`leaf`: Buffer | string, `index?`: number): *string[]*
+
+getHexProof
+
+**`desc`** Returns the proof for a target leaf as hex strings.
+
+**`example`** 
+```js
+const proof = tree.getHexProof(leaves[2])
+```
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`leaf` | Buffer &#124; string | Target leaf |
+`index?` | number | - |
+
+**Returns:** *string[]*
+
+- Proof array as hex strings.
+
+___
+
+###  getHexProofs
+
+▸ **getHexProofs**(): *string[]*
+
+getHexProofs
+
+**`desc`** Returns the proofs for all leaves as hex strings.
+
+**`example`** 
+```js
+const proofs = tree.getHexProofs()
+```
+
+**Returns:** *string[]*
+
+- Proofs array as hex strings.
+
+___
+
+###  getHexRoot
+
+▸ **getHexRoot**(): *string*
+
+getHexRoot
+
+**`desc`** Returns the Merkle root hash as a hex string.
+
+**`example`** 
+```js
+const root = tree.getHexRoot()
+```
+
+**Returns:** *string*
+
+___
+
+###  getLayerCount
+
+▸ **getLayerCount**(): *number*
+
+getLayerCount
+
+**`desc`** Returns the total number of layers.
+
+**`example`** 
+```js
+const count = tree.getLayerCount()
+```
+
+**Returns:** *number*
+
+___
+
+###  getLayers
+
+▸ **getLayers**(): *Buffer[][]*
+
+getLayers
+
+**`desc`** Returns multi-dimensional array of all layers of Merkle Tree, including leaves and root.
+
+**`example`** 
+```js
+const layers = tree.getLayers()
+```
+
+**Returns:** *Buffer[][]*
+
+___
+
+###  getLayersAsObject
+
+▸ **getLayersAsObject**(): *any*
+
+getLayersAsObject
+
+**`desc`** Returns the layers as nested objects instead of an array.
+
+**`example`** 
+```js
+const layersObj = tree.getLayersAsObject()
+```
+
+**Returns:** *any*
+
+___
+
+###  getLayersFlat
+
+▸ **getLayersFlat**(): *Buffer[]*
+
+getLayersFlat
+
+**`desc`** Returns single flat array of all layers of Merkle Tree, including leaves and root.
+
+**`example`** 
+```js
+const layers = tree.getLayersFlat()
+```
+
+**Returns:** *Buffer[]*
+
+___
+
+###  getLeaf
+
+▸ **getLeaf**(`index`: number): *Buffer*
+
+getLeaf
+
+**`desc`** Returns the leaf at the given index.
+
+**`example`** 
+```js
+const leaf = tree.getLeaf(1)
+```
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`index` | number |
+
+**Returns:** *Buffer*
+
+___
+
+###  getLeafCount
+
+▸ **getLeafCount**(): *number*
+
+getLeafCount
+
+**`desc`** Returns the total number of leaves.
+
+**`example`** 
+```js
+const count = tree.getLeafCount()
+```
+
+**Returns:** *number*
+
+___
+
+###  getLeafIndex
+
+▸ **getLeafIndex**(`target`: [TLeaf](../modules/_src_sparsemerkletree_.md#tleaf)): *number*
+
+getLeafIndex
+
+**`desc`** Returns the index of the given leaf, or -1 if the leaf is not found.
+
+**`example`** 
+```js
+const leaf = Buffer.from('abc')
+const index = tree.getLeafIndex(leaf)
+```
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`target` | [TLeaf](../modules/_src_sparsemerkletree_.md#tleaf) |
+
+**Returns:** *number*
+
+___
+
+###  getLeaves
+
+▸ **getLeaves**(`values?`: any[]): *Buffer[]*
+
+getLeaves
+
+**`desc`** Returns array of leaves of Merkle Tree.
+
+**`example`** 
+```js
+const leaves = tree.getLeaves()
+```
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`values?` | any[] |
+
+**Returns:** *Buffer[]*
+
+___
+
+###  getMultiProof
+
+▸ **getMultiProof**(`tree?`: any[], `indices?`: any[]): *Buffer[]*
+
+getMultiProof
+
+**`desc`** Returns the multiproof for given tree indices.
+
+**`example`** 
+```js
+const indices = [2, 5, 6]
+const proof = tree.getMultiProof(indices)
+```
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`tree?` | any[] | - |
+`indices?` | any[] | Tree indices. |
+
+**Returns:** *Buffer[]*
+
+- Multiproofs
+
+___
+
+###  getOptions
+
+▸ **getOptions**(): *object*
+
+**Returns:** *object*
+
+* **complete**: *boolean* = this.complete
+
+* **duplicateOdd**: *boolean* = this.duplicateOdd
+
+* **fillDefaultHash**: *string* = this.fillDefaultHash?.toString() ?? null
+
+* **hashLeaves**: *boolean* = this.hashLeaves
+
+* **isBitcoinTree**: *boolean* = this.isBitcoinTree
+
+* **sort**: *boolean* = this.sort
+
+* **sortLeaves**: *boolean* = this.sortLeaves
+
+* **sortPairs**: *boolean* = this.sortPairs
+
+___
+
+###  getPositionalHexProof
+
+▸ **getPositionalHexProof**(`leaf`: Buffer | string, `index?`: number): *(string | number)[][]*
+
+getPositionalHexProof
+
+**`desc`** Returns the proof for a target leaf as hex strings and the position in binary (left == 0).
+
+**`example`** 
+```js
+const proof = tree.getPositionalHexProof(leaves[2])
+```
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`leaf` | Buffer &#124; string | Target leaf |
+`index?` | number | - |
+
+**Returns:** *(string | number)[][]*
+
+- Proof array as hex strings. position at index 0
+
+___
+
+###  getProof
+
+▸ **getProof**(`leaf`: Buffer | string, `index?`: number): *object[]*
+
+getProof
+
+**`desc`** Returns the proof for a target leaf.
+
+**`example`** 
+```js
+const proof = tree.getProof(leaves[2])
+```
+
+**`example`** 
+```js
+const leaves = ['a', 'b', 'a'].map(value => keccak(value))
+const tree = new SparseMerkleTree(leaves, keccak)
+const proof = tree.getProof(leaves[2], 2)
+```
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`leaf` | Buffer &#124; string | Target leaf |
+`index?` | number | - |
+
+**Returns:** *object[]*
+
+- Array of objects containing a position property of type string
+with values of 'left' or 'right' and a data property of type Buffer.
+
+___
+
+###  getProofFlags
+
+▸ **getProofFlags**(`leaves`: any[], `proofs`: Buffer[] | string[]): *boolean[]*
+
+getProofFlags
+
+**`desc`** Returns list of booleans where proofs should be used instead of hashing.
+Proof flags are used in the Solidity multiproof verifiers.
+
+**`example`** 
+```js
+const indices = [2, 5, 6]
+const proof = tree.getMultiProof(indices)
+const proofFlags = tree.getProofFlags(leaves, proof)
+```
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`leaves` | any[] |
+`proofs` | Buffer[] &#124; string[] |
+
+**Returns:** *boolean[]*
+
+- Boolean flags
+
+___
+
+###  getProofIndices
+
+▸ **getProofIndices**(`treeIndices`: number[], `depth`: number): *number[]*
+
+getProofIndices
+
+**`desc`** Returns the proof indices for given tree indices.
+
+**`example`** 
+```js
+const proofIndices = tree.getProofIndices([2,5,6], 4)
+console.log(proofIndices) // [ 23, 20, 19, 8, 3 ]
+```
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`treeIndices` | number[] | Tree indices |
+`depth` | number | Tree depth; number of layers. |
+
+**Returns:** *number[]*
+
+- Proof indices
+
+___
+
+###  getProofs
+
+▸ **getProofs**(): *any[]*
+
+getProofs
+
+**`desc`** Returns the proofs for all leaves.
+
+**`example`** 
+```js
+const proofs = tree.getProofs()
+```
+
+**`example`** 
+```js
+const leaves = ['a', 'b', 'a'].map(value => keccak(value))
+const tree = new SparseMerkleTree(leaves, keccak)
+const proofs = tree.getProofs()
+```
+
+**Returns:** *any[]*
+
+- Array of objects containing a position property of type string
+with values of 'left' or 'right' and a data property of type Buffer for all leaves.
+
+___
+
+###  getProofsDFS
+
+▸ **getProofsDFS**(`currentLayer`: any, `index`: any, `proof`: any, `proofs`: any): *any[]*
+
+getProofsDFS
+
+**`desc`** Get all proofs through single traverse
+
+**`example`** 
+```js
+const layers = tree.getLayers()
+const index = 0;
+let proof = [];
+let proofs = [];
+const proof = tree.getProofsDFS(layers, index, proof, proofs)
+```
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`currentLayer` | any | Current layer index in traverse. |
+`index` | any | Current tarvese node index in traverse. |
+`proof` | any | Proof chain for single leaf. |
+`proofs` | any | Proofs for all leaves |
+
+**Returns:** *any[]*
+
+___
+
+###  getRoot
+
+▸ **getRoot**(): *Buffer*
+
+getRoot
+
+**`desc`** Returns the Merkle root hash as a Buffer.
+
+**`example`** 
+```js
+const root = tree.getRoot()
+```
+
+**Returns:** *Buffer*
+
+___
+
+### `Protected` isHexString
+
+▸ **isHexString**(`value`: string): *boolean*
+
+*Inherited from [Base](_src_base_.base.md).[isHexString](_src_base_.base.md#static-ishexstring)*
+
+isHexString
+
+**`desc`** Returns true if value is a hex string.
+
+**`example`** 
+```js
+console.log(MerkleTree.isHexString('0x1234'))
+```
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`value` | string |
+
+**Returns:** *boolean*
+
+___
+
+###  isUnevenTree
+
+▸ **isUnevenTree**(`treeLayers?`: any[]): *boolean*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`treeLayers?` | any[] |
+
+**Returns:** *boolean*
+
+___
+
+###  linearSearch
+
+▸ **linearSearch**(`array`: Buffer[], `element`: Buffer, `eqChecker`: function): *number*
+
+*Inherited from [Base](_src_base_.base.md).[linearSearch](_src_base_.base.md#static-linearsearch)*
+
+linearSearch
+
+**`desc`** Returns the first index of which given item is found in array using linear search.
+
+**`example`** 
+```js
+const index = tree.linearSearch(array, element, (a, b) => a === b)
+```
+
+**Parameters:**
+
+▪ **array**: *Buffer[]*
+
+Array of items.
+
+▪ **element**: *Buffer*
+
+Item to find.
+
+▪ **eqChecker**: *function*
+
+▸ (`a`: unknown, `b`: unknown): *boolean*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`a` | unknown |
+`b` | unknown |
+
+**Returns:** *number*
+
+- Index number
+
+___
+
+### `Protected` log2
+
+▸ **log2**(`n`: number): *number*
+
+*Inherited from [Base](_src_base_.base.md).[log2](_src_base_.base.md#protected-log2)*
+
+log2
+
+**`desc`** Returns the log2 of number.
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`n` | number |
+
+**Returns:** *number*
+
+___
+
+###  print
+
+▸ **print**(): *void*
+
+*Inherited from [Base](_src_base_.base.md).[print](_src_base_.base.md#print)*
+
+print
+
+**`desc`** Prints out a visual representation of the merkle tree.
+
+**`example`** 
+```js
+tree.print()
+```
+
+**Returns:** *void*
+
+___
+
+###  resetTree
+
+▸ **resetTree**(): *void*
+
+resetTree
+
+**`desc`** Resets the tree by clearing the leaves and layers.
+
+**`example`** 
+```js
+tree.resetTree()
+```
+
+**Returns:** *void*
+
+___
+
+###  toString
+
+▸ **toString**(): *string*
+
+toString
+
+**`desc`** Returns a visual representation of the merkle tree as a string.
+
+**`example`** 
+```js
+console.log(tree.toString())
+```
+
+**Returns:** *string*
+
+___
+
+### `Protected` toTreeString
+
+▸ **toTreeString**(): *string*
+
+toTreeString
+
+**`desc`** Returns a visual representation of the merkle tree as a string.
+
+**`example`** 
+```js
+console.log(tree.toTreeString())
+```
+
+**Returns:** *string*
+
+___
+
+###  verify
+
+▸ **verify**(`proof`: any[], `targetNode`: Buffer | string, `root`: Buffer | string): *boolean*
+
+verify
+
+**`desc`** Returns true if the proof path (array of hashes) can connect the target node
+to the Merkle root.
+
+**`example`** 
+```js
+const root = tree.getRoot()
+const proof = tree.getProof(leaves[2])
+const verified = tree.verify(proof, leaves[2], root)
+```
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`proof` | any[] | Array of proof objects that should connect target node to Merkle root. |
+`targetNode` | Buffer &#124; string | Target node Buffer |
+`root` | Buffer &#124; string | Merkle root Buffer |
+
+**Returns:** *boolean*
+
+___
+
+###  verifyMultiProof
+
+▸ **verifyMultiProof**(`root`: Buffer | string, `proofIndices`: number[], `proofLeaves`: Buffer[] | string[], `leavesCount`: number, `proof`: Buffer[] | string[]): *boolean*
+
+verifyMultiProof
+
+**`desc`** Returns true if the multiproofs can connect the leaves to the Merkle root.
+
+**`example`** 
+```js
+const leaves = tree.getLeaves()
+const root = tree.getRoot()
+const treeFlat = tree.getLayersFlat()
+const leavesCount = leaves.length
+const proofIndices = [2, 5, 6]
+const proofLeaves = proofIndices.map(i => leaves[i])
+const proof = tree.getMultiProof(treeFlat, indices)
+const verified = tree.verifyMultiProof(root, proofIndices, proofLeaves, leavesCount, proof)
+```
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`root` | Buffer &#124; string | Merkle tree root |
+`proofIndices` | number[] | Leave indices for proof |
+`proofLeaves` | Buffer[] &#124; string[] | Leaf values at indices for proof |
+`leavesCount` | number | Count of original leaves |
+`proof` | Buffer[] &#124; string[] | Multiproofs given indices |
+
+**Returns:** *boolean*
+
+___
+
+###  verifyMultiProofWithFlags
+
+▸ **verifyMultiProofWithFlags**(`root`: Buffer | string, `leaves`: [TLeaf](../modules/_src_sparsemerkletree_.md#tleaf)[], `proofs`: Buffer[] | string[], `proofFlag`: boolean[]): *boolean*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`root` | Buffer &#124; string |
+`leaves` | [TLeaf](../modules/_src_sparsemerkletree_.md#tleaf)[] |
+`proofs` | Buffer[] &#124; string[] |
+`proofFlag` | boolean[] |
+
+**Returns:** *boolean*
+
+___
+
+### `Protected` zip
+
+▸ **zip**(`a`: any[], `b`: any[]): *any[][]*
+
+*Inherited from [Base](_src_base_.base.md).[zip](_src_base_.base.md#protected-zip)*
+
+zip
+
+**`desc`** Returns true if value is a hex string.
+
+**`example`** 
+```js
+const zipped = tree.zip(['a', 'b'],['A', 'B'])
+console.log(zipped) // [ [ 'a', 'A' ], [ 'b', 'B' ] ]
+```
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`a` | any[] | first array |
+`b` | any[] | second array |
+
+**Returns:** *any[][]*
+
+___
+
+### `Static` bigNumberify
+
+▸ **bigNumberify**(`value`: any): *BigInt*
+
+*Inherited from [Base](_src_base_.base.md).[bigNumberify](_src_base_.base.md#bignumberify)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`value` | any |
+
+**Returns:** *BigInt*
+
+___
+
+### `Static` binarySearch
+
+▸ **binarySearch**(`array`: Buffer[], `element`: Buffer, `compareFunction`: function): *number*
+
+*Inherited from [Base](_src_base_.base.md).[binarySearch](_src_base_.base.md#static-binarysearch)*
+
+binarySearch
+
+**`desc`** Returns the first index of which given item is found in array using binary search.
+
+**`example`** 
+```js
+const index = MerkleTree.binarySearch(array, element, Buffer.compare)
+```
+
+**Parameters:**
+
+▪ **array**: *Buffer[]*
+
+Array of items.
+
+▪ **element**: *Buffer*
+
+Item to find.
+
+▪ **compareFunction**: *function*
+
+▸ (`a`: unknown, `b`: unknown): *number*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`a` | unknown |
+`b` | unknown |
+
+**Returns:** *number*
+
+- Index number
+
+___
+
+### `Static` bufferToHex
+
+▸ **bufferToHex**(`value`: Buffer, `withPrefix`: boolean): *string*
+
+*Inherited from [Base](_src_base_.base.md).[bufferToHex](_src_base_.base.md#buffertohex)*
+
+bufferToHex
+
+**`desc`** Returns a hex string with 0x prefix for given buffer.
+
+**`example`** 
+```js
+const hexStr = MerkleTree.bufferToHex(Buffer.from('A'))
+```
+
+**Parameters:**
+
+Name | Type | Default |
+------ | ------ | ------ |
+`value` | Buffer | - |
+`withPrefix` | boolean | true |
+
+**Returns:** *string*
+
+___
+
+### `Static` bufferify
+
+▸ **bufferify**(`value`: any): *Buffer*
+
+*Inherited from [Base](_src_base_.base.md).[bufferify](_src_base_.base.md#static-bufferify)*
+
+bufferify
+
+**`desc`** Returns a buffer type for the given value.
+
+**`example`** 
+```js
+const buf = MerkleTree.bufferify('0x1234')
+```
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`value` | any |
+
+**Returns:** *Buffer*
+
+___
+
+### `Static` getMultiProof
+
+▸ **getMultiProof**(`tree`: Buffer[] | string[], `indices`: number[]): *Buffer[]*
+
+getMultiProof
+
+**`desc`** Returns the multiproof for given tree indices.
+
+**`example`** 
+```js
+const flatTree = tree.getLayersFlat()
+const indices = [2, 5, 6]
+const proof = SparseMerkleTree.getMultiProof(flatTree, indices)
+```
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`tree` | Buffer[] &#124; string[] | Tree as a flat array. |
+`indices` | number[] | Tree indices. |
+
+**Returns:** *Buffer[]*
+
+- Multiproofs
+
+___
+
+### `Static` hexZeroPad
+
+▸ **hexZeroPad**(`hexStr`: string, `length`: number): *string*
+
+*Inherited from [Base](_src_base_.base.md).[hexZeroPad](_src_base_.base.md#static-hexzeropad)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`hexStr` | string |
+`length` | number |
+
+**Returns:** *string*
+
+___
+
+### `Static` isHexString
+
+▸ **isHexString**(`v`: string): *boolean*
+
+*Inherited from [Base](_src_base_.base.md).[isHexString](_src_base_.base.md#static-ishexstring)*
+
+isHexString
+
+**`desc`** Returns true if value is a hex string.
+
+**`example`** 
+```js
+console.log(MerkleTree.isHexString('0x1234'))
+```
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`v` | string |
+
+**Returns:** *boolean*
+
+___
+
+### `Static` linearSearch
+
+▸ **linearSearch**(`array`: Buffer[], `element`: Buffer, `eqChecker`: function): *number*
+
+*Inherited from [Base](_src_base_.base.md).[linearSearch](_src_base_.base.md#static-linearsearch)*
+
+linearSearch
+
+**`desc`** Returns the first index of which given item is found in array using linear search.
+
+**`example`** 
+```js
+const index = MerkleTree.linearSearch(array, element, (a, b) => a === b)
+```
+
+**Parameters:**
+
+▪ **array**: *Buffer[]*
+
+Array of items.
+
+▪ **element**: *Buffer*
+
+Item to find.
+
+▪ **eqChecker**: *function*
+
+▸ (`a`: unknown, `b`: unknown): *boolean*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`a` | unknown |
+`b` | unknown |
+
+**Returns:** *number*
+
+- Index number
+
+___
+
+### `Static` marshalLeaves
+
+▸ **marshalLeaves**(`leaves`: any[]): *string*
+
+marshalLeaves
+
+**`desc`** Returns array of leaves of Merkle Tree as a JSON string.
+
+**`example`** 
+```js
+const jsonStr = SparseMerkleTree.marshalLeaves(leaves)
+```
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`leaves` | any[] |
+
+**Returns:** *string*
+
+- List of leaves as JSON string
+
+___
+
+### `Static` marshalProof
+
+▸ **marshalProof**(`proof`: any[]): *string*
+
+marshalProof
+
+**`desc`** Returns proof array as JSON string.
+
+**`example`** 
+```js
+const jsonStr = SparseMerkleTree.marshalProof(proof)
+```
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`proof` | any[] | Merkle tree proof array |
+
+**Returns:** *string*
+
+- Proof array as JSON string.
+
+___
+
+### `Static` marshalTree
+
+▸ **marshalTree**(`tree`: [SparseMerkleTree](_src_sparsemerkletree_.sparsemerkletree.md)): *string*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`tree` | [SparseMerkleTree](_src_sparsemerkletree_.sparsemerkletree.md) |
+
+**Returns:** *string*
+
+___
+
+### `Static` print
+
+▸ **print**(`tree`: any): *void*
+
+*Inherited from [Base](_src_base_.base.md).[print](_src_base_.base.md#print)*
+
+print
+
+**`desc`** Prints out a visual representation of the given merkle tree.
+
+**`example`** 
+```js
+MerkleTree.print(tree)
+```
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`tree` | any | Merkle tree instance. |
+
+**Returns:** *void*
+
+___
+
+### `Static` unmarshalLeaves
+
+▸ **unmarshalLeaves**(`jsonStr`: string | object): *Buffer[]*
+
+unmarshalLeaves
+
+**`desc`** Returns array of leaves of Merkle Tree as a Buffers.
+
+**`example`** 
+```js
+const leaves = SparseMerkleTree.unmarshalLeaves(jsonStr)
+```
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`jsonStr` | string &#124; object |
+
+**Returns:** *Buffer[]*
+
+- Unmarshalled list of leaves
+
+___
+
+### `Static` unmarshalProof
+
+▸ **unmarshalProof**(`jsonStr`: string | object): *any[]*
+
+unmarshalProof
+
+**`desc`** Returns the proof for a target leaf as a list of Buffers.
+
+**`example`** 
+```js
+const proof = SparseMerkleTree.unmarshalProof(jsonStr)
+```
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`jsonStr` | string &#124; object |
+
+**Returns:** *any[]*
+
+- Marshalled proof
+
+___
+
+### `Static` unmarshalTree
+
+▸ **unmarshalTree**(`jsonStr`: string | object, `hashFn`: any, `options`: [Options](../interfaces/_src_sparsemerkletree_.options.md)): *[SparseMerkleTree](_src_sparsemerkletree_.sparsemerkletree.md)*
+
+**Parameters:**
+
+Name | Type | Default |
+------ | ------ | ------ |
+`jsonStr` | string &#124; object | - |
+`hashFn` | any | SHA256 |
+`options` | [Options](../interfaces/_src_sparsemerkletree_.options.md) | {} |
+
+**Returns:** *[SparseMerkleTree](_src_sparsemerkletree_.sparsemerkletree.md)*
+
+___
+
+### `Static` verify
+
+▸ **verify**(`proof`: any[], `targetNode`: Buffer | string, `root`: Buffer | string, `hashFn`: any, `options`: [Options](../interfaces/_src_sparsemerkletree_.options.md)): *boolean*
+
+verify
+
+**`desc`** Returns true if the proof path (array of hashes) can connect the target node
+to the Merkle root.
+
+**`example`** 
+```js
+const verified = SparseMerkleTree.verify(proof, leaf, root, sha256, options)
+```
+
+**Parameters:**
+
+Name | Type | Default | Description |
+------ | ------ | ------ | ------ |
+`proof` | any[] | - | Array of proof objects that should connect target node to Merkle root. |
+`targetNode` | Buffer &#124; string | - | Target node Buffer |
+`root` | Buffer &#124; string | - | Merkle root Buffer |
+`hashFn` | any | SHA256 | - |
+`options` | [Options](../interfaces/_src_sparsemerkletree_.options.md) | {} | Additional options |
+
+**Returns:** *boolean*

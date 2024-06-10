@@ -11,4 +11,5 @@
 * ["src/MerkleMountainRange"](modules/_src_merklemountainrange_.md)
 * ["src/MerkleSumTree"](modules/_src_merklesumtree_.md)
 * ["src/MerkleTree"](modules/_src_merkletree_.md)
+* ["src/SparseMerkleTree"](modules/_src_sparsemerkletree_.md)
 * ["src/index"](modules/_src_index_.md)
