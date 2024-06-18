@@ -8,7 +8,9 @@
 
 * [IncrementalMerkleTree](_src_index_.md#incrementalmerkletree)
 * [MerkleMountainRange](_src_index_.md#merklemountainrange)
+* [MerklePatricia](_src_index_.md#merklepatricia)
 * [MerkleSumTree](_src_index_.md#merklesumtree)
+* [PatriciaMerkleTree](_src_index_.md#patriciamerkletree)
 * [SparseMerkleTree](_src_index_.md#sparsemerkletree)
 
 ## References
@@ -25,9 +27,21 @@ ___
 
 ___
 
+###  MerklePatricia
+
+• **MerklePatricia**:
+
+___
+
 ###  MerkleSumTree
 
 • **MerkleSumTree**:
+
+___
+
+###  PatriciaMerkleTree
+
+• **PatriciaMerkleTree**:
 
 ___
 
