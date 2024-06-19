@@ -12,15 +12,15 @@
 
 * [constructor](_src_merklepatricia_.merklepatricia.md#constructor)
 
-### Properties
+### Accessors
 
-* [root](_src_merklepatricia_.merklepatricia.md#root)
+* [rootHash](_src_merklepatricia_.merklepatricia.md#roothash)
 
 ### Methods
 
 * [generateProof](_src_merklepatricia_.merklepatricia.md#generateproof)
 * [get](_src_merklepatricia_.merklepatricia.md#get)
-* [insert](_src_merklepatricia_.merklepatricia.md#insert)
+* [put](_src_merklepatricia_.merklepatricia.md#put)
 * [verifyProof](_src_merklepatricia_.merklepatricia.md#verifyproof)
 
 ## Constructors
@@ -31,17 +31,19 @@
 
 **Returns:** *[MerklePatricia](_src_merklepatricia_.merklepatricia.md)*
 
-## Properties
+## Accessors
 
-###  root
+###  rootHash
 
-• **root**: *[Node](_src_merklepatricia_.node.md)*
+• **get rootHash**(): *string*
+
+**Returns:** *string*
 
 ## Methods
 
 ###  generateProof
 
-▸ **generateProof**(`key`: string): *[Node](_src_merklepatricia_.node.md)[]*
+▸ **generateProof**(`key`: string): *any[]*
 
 **Parameters:**
 
@@ -49,7 +51,7 @@ Name | Type |
 ------ | ------ |
 `key` | string |
 
-**Returns:** *[Node](_src_merklepatricia_.node.md)[]*
+**Returns:** *any[]*
 
 ___
 
@@ -67,9 +69,9 @@ Name | Type |
 
 ___
 
-###  insert
+###  put
 
-▸ **insert**(`key`: string, `value`: string): *void*
+▸ **put**(`key`: string, `value`: string): *void*
 
 **Parameters:**
 
@@ -84,7 +86,7 @@ ___
 
 ###  verifyProof
 
-▸ **verifyProof**(`rootHash`: string, `key`: string, `proof`: [Node](_src_merklepatricia_.node.md)[]): *boolean*
+▸ **verifyProof**(`rootHash`: string, `key`: string, `proof`: any[]): *boolean*
 
 **Parameters:**
 
@@ -92,6 +94,6 @@ Name | Type |
 ------ | ------ |
 `rootHash` | string |
 `key` | string |
-`proof` | [Node](_src_merklepatricia_.node.md)[] |
+`proof` | any[] |
 
 **Returns:** *boolean*
