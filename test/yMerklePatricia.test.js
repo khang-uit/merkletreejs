@@ -44,11 +44,11 @@ test('PatriciaMerkleTree handling non-existent keys', t => {
   const rootHash = customTree.rootHash
 
   // Attempt to generate proof for a key that doesn't exist
-  const proofForNonExistentKey = customTree.generateProof('1a2b3f') // Key that doesn't exist
+  const proofForNonExistentKey = customTree.generateProof('7d336') // Key that doesn't exist
   console.log(proofForNonExistentKey)
 
   // Verify that the proof for the non-existent key cannot be verified
-  const isProofValid = customTree.verifyProof(rootHash, '1a2b3f', proofForNonExistentKey)
+  const isProofValid = customTree.verifyProof(rootHash, '7d336', proofForNonExistentKey)
   t.notOk(isProofValid, 'Proof for non-existent key should not be valid')
 
   t.end()

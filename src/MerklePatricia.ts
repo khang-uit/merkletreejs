@@ -178,33 +178,39 @@ export class MerklePatricia {
     // Method to verify a proof for a given key
     verifyProof(rootHash: string, key: string, proof: any[]): boolean {
       const encodedKey = this.encodeKey(key);
-      let expectedNode = proof[0];
+      let currentHash = rootHash;
+      let currentKey = encodedKey;
   
-      for (let i = 1; i < proof.length; i++) {
+      for (let i = 0; i < proof.length; i++) {
           const node = proof[i];
+          const nodeHash = keccak256(JSON.stringify(node)).toString('hex');
   
-          if (!node) return false;
+          if (nodeHash !== currentHash) {
+              return false;
+          }
   
-          if (expectedNode.type === 'branch') {
-              if (encodedKey.length === 0) {
-                  if (expectedNode.value !== node.value) return false;
-              } else {
-                  const branchIndex = encodedKey.shift();
-                  if (keccak256(JSON.stringify(expectedNode.branches[branchIndex])).toString('hex') !== keccak256(JSON.stringify(node)).toString('hex')) return false;
-                  expectedNode = node;
+          if (node.type === 'branch') {
+              if (currentKey.length === 0) {
+                  return node.value !== null;
               }
-          } else if (expectedNode.type === 'extension') {
-              const matchingLength = this.matchingPrefixLength(expectedNode.key, encodedKey);
-              if (matchingLength !== expectedNode.key.length) return false;
-              expectedNode = node;
-              encodedKey.splice(0, matchingLength);
-          } else if (expectedNode.type === 'leaf') {
-              if (!this.arrayEqual(expectedNode.key, encodedKey)) return false;
-              expectedNode = node;
+              currentHash = keccak256(JSON.stringify(node.branches[currentKey[0]])).toString('hex');
+              currentKey = currentKey.slice(1);
+          } else if (node.type === 'extension') {
+              const matchingLength = this.matchingPrefixLength(node.key, currentKey);
+              if (matchingLength !== node.key.length) {
+                  return false;
+              }
+              currentHash = keccak256(JSON.stringify(node.nextNode)).toString('hex');
+              currentKey = currentKey.slice(matchingLength);
+          } else if (node.type === 'leaf') {
+              if (!this.arrayEqual(node.key, currentKey)) {
+                  return false;
+              }
+              return node.value !== null;
           }
       }
   
-      return keccak256(JSON.stringify(proof[0])).toString('hex') === rootHash;
+      return false;
   }
   
 
