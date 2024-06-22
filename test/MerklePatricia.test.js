@@ -16,7 +16,6 @@ test('PatriciaMerkleTree getProof and verifyProof methods', t => {
 
   // Get proof for 1a2b3c
   const proofForKey1 = customTree.generateProof('11355')
-  console.log('Roothash: ', rootHash)
   // console.log(proofForKey1)
   t.ok(customTree.verifyProof(rootHash, '11355', proofForKey1), 'Proof for 11355 should be verified correctly')
 
@@ -45,7 +44,6 @@ test('PatriciaMerkleTree handling non-existent keys', t => {
 
   // Attempt to generate proof for a key that doesn't exist
   const proofForNonExistentKey = customTree.generateProof('7d336') // Key that doesn't exist
-  console.log(proofForNonExistentKey)
 
   // Verify that the proof for the non-existent key cannot be verified
   const isProofValid = customTree.verifyProof(rootHash, '7d336', proofForNonExistentKey)
