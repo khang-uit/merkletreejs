@@ -121,3 +121,8 @@ export class SparseMerkleTree {
   }
 }
 
+if (typeof window !== 'undefined') {
+  ;(window as any).SparseMerkleTree = SparseMerkleTree
+}
+
+

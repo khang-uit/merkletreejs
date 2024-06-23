@@ -114,6 +114,73 @@ export class MerkleSparseSumTree {
     return path[path.length - 1] === '0';
   }
 
+  // Get all the leaf nodes
+  getLeaves(): { hash: string, sum: BigInt }[] {
+    const leaves: { hash: string, sum: BigInt }[] = [];
+    const leafCount = Math.pow(2, this.height);
+    for (let i = 0; i < leafCount; i++) {
+      const path = i.toString(2).padStart(this.height, '0');
+      const leaf = this.nodes.get(path) || this.defaultNodes[0];
+      leaves.push(leaf);
+    }
+    return leaves;
+  }
+
+  // Get all layers of the tree
+  getLayers(): { hash: string, sum: BigInt }[][] {
+    const layers: { hash: string, sum: BigInt }[][] = [];
+    for (let i = 0; i <= this.height; i++) {
+      const levelNodes: { hash: string, sum: BigInt }[] = [];
+      const levelSize = Math.pow(2, i);
+      for (let j = 0; j < levelSize; j++) {
+        const path = j.toString(2).padStart(i, '0');
+        const node = this.nodes.get(path) || this.defaultNodes[this.height - i];
+        levelNodes.push(node);
+      }
+      layers.push(levelNodes);
+    }
+    return layers;
+  }
+
+  // Get the flattened list of nodes for all layers
+  getFlatLayers(): string[] {
+    const flatLayers: string[] = ["0x00"];
+    this.getLayers().forEach(layer => {
+      layer.forEach(node => {
+        flatLayers.push(`0x${node.hash}`);
+      });
+    });
+    return flatLayers;
+  }
+
+  getTreeVisualization(): string {
+    const visualize = (node: { hash: string, sum: BigInt }, path: string, depth: number, prefix: string): string => {
+      const indent = '   '.repeat(depth);
+  
+      if (path.length === this.height) {
+        return `${indent}${prefix}${node.hash}\n`;
+      }
+  
+      const leftChildPath = path + '0';
+      const rightChildPath = path + '1';
+      const leftChild = this.nodes.get(leftChildPath) || this.defaultNodes[this.height - path.length - 1];
+      const rightChild = this.nodes.get(rightChildPath) || this.defaultNodes[this.height - path.length - 1];
+  
+      if (leftChild.hash !== rightChild.hash) {
+        return `${indent}${prefix}${node.hash}\n` +
+               `${visualize(leftChild, leftChildPath, depth + 1, '├─ ')}` +
+               `${visualize(rightChild, rightChildPath, depth + 1, '└─ ')}`;
+      }
+      
+      return `${indent}${prefix}${node.hash}\n` +
+             `${visualize(leftChild, leftChildPath, depth + 1, '└─ ')}`;
+    };
+  
+    const rootPath = ''; // Assuming the root path is empty or initialize accordingly
+    return visualize(this.root, rootPath, 0, '└─ ');
+  }
+
+
   // Visualize the tree
   printTree() {
     console.log('Sparse Sum Merkle Tree:');
@@ -135,3 +202,7 @@ export class MerkleSparseSumTree {
 const hashFn = (data: string): string => {
   return createHash('sha256').update(data).digest('hex');
 };
+
+if (typeof window !== 'undefined') {
+  ; (window as any).MerkleSparseSumTree = MerkleSparseSumTree
+}

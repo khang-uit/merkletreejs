@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Merkle Patricia Trie Example</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+    }
+    form {
+      margin-bottom: 1rem;
+    }
+    pre {
+      white-space: pre-wrap;
+      background-color: #f0f0f0;
+      padding: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>Merkle Patricia Trie Example</h1>
+
+  <div>
+    <h2>Input</h2>
+    <form id="form">
+      <label for="keyValuePairs">Key-Value Pairs (key,value per line)</label><br>
+      <textarea id="keyValuePairs" rows="5" cols="50"></textarea><br>
+      <button type="submit">Insert</button>
+    </form>
+  </div>
+
+  <div>
+    <h2>Get Value</h2>
+    <form id="getForm">
+      <label for="getKey">Key</label><br>
+      <input type="text" id="getKey"><br>
+      <button type="submit">Get</button>
+    </form>
+    <div>
+      <h3>Value</h3>
+      <pre id="valueOutput"></pre>
+    </div>
+  </div>
+
+  <div>
+    <h2>Generate Proof</h2>
+    <form id="proofForm">
+      <label for="proofKey">Key</label><br>
+      <input type="text" id="proofKey"><br>
+      <button type="submit">Generate Proof</button>
+    </form>
+    <div>
+      <h3>Proof</h3>
+      <pre id="proofOutput"></pre>
+    </div>
+  </div>
+
+  <div>
+    <h2>Verify Proof</h2>
+    <form id="verifyForm">
+      <label for="verifyKey">Key</label><br>
+      <input type="text" id="verifyKey"><br>
+      <label for="verifyValue">Value</label><br>
+      <input type="text" id="verifyValue"><br>
+      <label for="rootHash">Root Hash</label><br>
+      <input type="text" id="rootHash"><br>
+      <button type="submit">Verify Proof</button>
+    </form>
+    <div>
+      <h3>Verification Result</h3>
+      <pre id="verifyOutput"></pre>
+    </div>
+  </div>
+
+  <div>
+    <h2>Trie Root Hash</h2>
+    <pre id="rootOutput"></pre>
+  </div>
+
+  <div>
+    <h2>Leaves</h2>
+    <pre id="leavesOutput"></pre>
+  </div>
+
+  <div>
+    <h2>Layers</h2>
+    <pre id="layersOutput"></pre>
+  </div>
+
+  <div>
+    <h2>Flat Layers</h2>
+    <pre id="flatLayersOutput"></pre>
+  </div>
+
+  <div>
+    <h2>Entire Tree</h2>
+    <pre id="treeOutput"></pre>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/keccak256@1.0.6/keccak256.min.js"></script>
+  <script src="merkletree.js"></script>
+  <script src="patricia.js"></script>
+</body>
+</html>

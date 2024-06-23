@@ -46,8 +46,8 @@ export class MerklePatricia {
     }
 
     // Helper method to encode the key
-    private encodeKey (key: string): number[] {
-      return Array.from(key).map(c => parseInt(c, 16))
+    private encodeKey(key: string): number[] {
+        return Array.from(key).map(c => parseInt(c, 16))
     }
 
     // Method to insert a node into the trie
@@ -82,13 +82,13 @@ export class MerklePatricia {
         newBranchNode.branches[key[matchingLength]] = this.insertNode(null, key.slice(matchingLength + 1), value);
         newBranchNode.hash = this.computeNodeHash(newBranchNode);
         const newExtensionNode: ExtensionNode = {
-          type: 'extension',
-          key: key.slice(0, matchingLength),
-          nextNode: newBranchNode,
-          hash: ''
-      };
-      newExtensionNode.hash = this.computeNodeHash(newExtensionNode)
-      return newExtensionNode
+            type: 'extension',
+            key: key.slice(0, matchingLength),
+            nextNode: newBranchNode,
+            hash: ''
+        };
+        newExtensionNode.hash = this.computeNodeHash(newExtensionNode)
+        return newExtensionNode
     }
 
     // Method to handle insertion into a branch or extension node
@@ -273,4 +273,76 @@ export class MerklePatricia {
     get rootHash(): string {
         return this.root ? this.root.hash : '';
     }
+
+    // Method to get all leaf node hashes
+    getLeaves(): string[] {
+        const leaves: string[] = [];
+        this.collectLeaves(this.root, leaves);
+        return leaves;
+    }
+
+    private collectLeaves(node: TrieNode, leaves: string[]): void {
+        if (!node) return;
+
+        if (node.type === 'leaf') {
+            leaves.push(node.hash);
+        } else if (node.type === 'branch') {
+            for (const branch of node.branches) {
+                this.collectLeaves(branch, leaves);
+            }
+        } else if (node.type === 'extension') {
+            this.collectLeaves(node.nextNode, leaves);
+        }
+    }
+
+    // Method to get flat layers of hashes
+    getFlatLayers(): string[] {
+        const layers: string[] = [];
+        this.collectFlatLayers(this.root, layers, 0);
+        return layers;
+    }
+
+    private collectFlatLayers(node: TrieNode, layers: string[], depth: number): void {
+        if (!node) return;
+
+        while (layers.length <= depth) {
+            layers.push('');
+        }
+
+        layers[depth] += node.hash;
+
+        if (node.type === 'branch') {
+            for (const branch of node.branches) {
+                this.collectFlatLayers(branch, layers, depth + 1);
+            }
+        } else if (node.type === 'extension') {
+            this.collectFlatLayers(node.nextNode, layers, depth + 1);
+        }
+    }
+
+    // Method to get a string representation of the tree structure
+    getTreeStructure(): string {
+        return this.buildTreeStructure(this.root, '');
+    }
+
+    private buildTreeStructure(node: TrieNode, indent: string): string {
+        if (!node) return '';
+
+        let result = `${indent}└─ ${node.hash}\n`;
+
+        if (node.type === 'branch') {
+            const newIndent = indent + '   ';
+            for (const branch of node.branches) {
+                result += this.buildTreeStructure(branch, newIndent);
+            }
+        } else if (node.type === 'extension') {
+            result += this.buildTreeStructure(node.nextNode, indent + '   ');
+        }
+
+        return result;
+    }
+}
+
+if (typeof window !== 'undefined') {
+    (window as any).MerklePatricia = MerklePatricia;
 }
