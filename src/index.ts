@@ -1,7 +1,7 @@
 import MerkleTree from './MerkleTree'
 export { MerkleTree }
 export { MerkleMountainRange } from './MerkleMountainRange'
-export { SparseMerkleTree } from './SparseMerkleTree'
+export { MerkleSparseTree } from './MerkleSparseTree'
 export { IncrementalMerkleTree } from './IncrementalMerkleTree'
 export { MerkleSumTree } from './MerkleSumTree'
 export { MerkleSparseSumTree } from './MerkleSparseSumTree'

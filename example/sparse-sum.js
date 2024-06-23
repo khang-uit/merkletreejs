@@ -23,12 +23,12 @@ function initializeTree() {
     tree = new window.MerkleSparseTree(height);
 
     const leaves = [
-        { path: '1000', value: 'value1' },
-        { path: '1110', value: 'value2' },
-        { path: '1111', value: 'value3' },
-        { path: '0111', value: 'value4' },
+        { path: '1000', value: 'value1', sum: 10 },
+        { path: '1110', value: 'value2', sum: 30 },
+        { path: '1111', value: 'value3', sum: 40 },
+        { path: '0111', value: 'value4', sum: 20 },
     ];
-    $input.textContent = `1000, value1\n1110, value2\n1111, value3\n0111, value4`
+    $input.textContent = `1000, value1, 10\n1110, value2, 30\n1111, value3, 40\n0111, value4, 20`
     leaves.forEach(function (leaf) {
         tree.insert(leaf.path, leaf.value);
     });
@@ -53,11 +53,12 @@ function generateRandomData(numLines, height) {
         
         // Generate a random value (for demonstration, using a simple incremental value)
         let value = 'value' + (i + 1);
+        let sum = 10
         if(i==numLines-1){{
-            console.log(path, value)
+            console.log(path, value, sum)
         }}
         // Store the generated data as an object
-        testData.push({ path: path, value: value });
+        testData.push({ path: path, value: value, sum: BigInt(sum) });
     }
 
     return testData;
@@ -66,11 +67,12 @@ function generateRandomData(numLines, height) {
 // Function to insert generated test data into the Merkle tree
 function insertGeneratedDataIntoTree(numLines, height) {
     const testData = generateRandomData(numLines, height);
-    tree = new window.MerkleSparseTree(height);
+    tree = new window.MerkleSparseSumTree(height, window.sha256);
 
     const insertionTime = performance.now();
     testData.forEach(function (leaf) {
-        tree.insert(leaf.path, leaf.value);
+        console.log(leaf)
+        tree.insert(leaf.path, leaf.value, leaf.sum);
     });
     $insertionTimeOutput.textContent = `Insertion Time: ${performance.now() - insertionTime} ms`;
 }
@@ -84,20 +86,21 @@ $multiInputForm.addEventListener('submit', function (event) {
     insertGeneratedDataIntoTree(numLines, height);
 });
 
+
 $form.addEventListener('submit', function (event) {
     event.preventDefault();
     const value = $input.value.trim();
     const height = 4; // Set the height of your tree here
-    tree = new window.MerkleSparseTree(height);
+    tree = new window.MerkleSparseSumTree(height, window.sha256);
 
     const leaves = value.split('\n').map(function (line) {
-        const [path, hash] = line.trim().split(',');
-        return { path: path.trim(), value: hash.trim() };
+        const [path, hash, sum] = line.trim().split(',');
+        return { path: path.trim(), value: hash.trim(), sum: BigInt(sum.trim()) };
     });
-
     const insertionTime = performance.now();
     leaves.forEach(function (leaf) {
-        tree.insert(leaf.path, leaf.value);
+        console.log(leaf)
+        tree.insert(leaf.path, leaf.value, leaf.sum);
     });
     $insertionTimeOutput.textContent = `Insertion Time: ${performance.now() - insertionTime} ms`;
 
@@ -112,7 +115,8 @@ document.getElementById('proofForm').addEventListener('submit', function (event)
     const proofGeneration = performance.now();
     if (tree && path) {
         const proof = tree.generateProof(path);
-        $proof.textContent = JSON.stringify(proof, null, 2);
+        $proof.textContent = JSON.stringify(proof, (key, value) =>
+            typeof value === 'bigint' ? value.toString() : value, 2);
     } else {
         $proof.textContent = 'Invalid leaf path or tree not initialized';
     }
@@ -128,26 +132,28 @@ $verifyForm.addEventListener('submit', function (event) {
     }
     const path = document.getElementById('verifyPath').value.trim();
     const value = document.getElementById('verifyValue').value.trim();
+    const sum = BigInt(document.getElementById('verifySum').value.trim());
     const proofGeneration = performance.now();
     const proof = tree.generateProof(path);
     const root = tree.getRoot();
-    const isValid = tree.verifyProof(path, value, proof, root);
+    const isValid = tree.verifyProof(path, value, sum, proof, root);
     $verifyOutput.textContent = `Verification: ${isValid}`;
-    $proofOutput.textContent = `${JSON.stringify(proof, null, 2)}`;
+    $proofOutput.textContent = `Proof: ${JSON.stringify(proof, (key, value) =>
+        typeof value === 'bigint' ? value.toString() : value, 2)}`;
     $verificationTimeOutput.textContent = `Verification Time: ${performance.now() - proofGeneration} ms`
 });
 
 function updateOutputs() {
     const root = tree.getRoot();
-    $rootOutput.textContent = `Root: ${root}`;
+    $rootOutput.textContent = `Root: ${root.hash} Sum: ${root.sum.toString()}`; // Convert BigInt to string
 
-    const layers = tree.getLayers(); // You need to implement this method in MerkleSparseTree
-    $layersOutput.textContent = JSON.stringify(layers, null, 2);
+    const layers = tree.getLayers();
+    $layersOutput.textContent = JSON.stringify(layers, replacer, 2); // Use custom replacer
 
-    const flatLayers = tree.getFlatLayers(); // You need to implement this method in MerkleSparseTree
+    const flatLayers = tree.getFlatLayers().map(node => node.toString()); // Convert each node's hash to string
     $flatLayersOutput.textContent = JSON.stringify(flatLayers, null, 2);
 
-    const treeVisualization = tree.getTreeVisualization(); // This will print tree visualization to console
+    const treeVisualization = tree.getTreeVisualization();
     console.log(treeVisualization)
     $treeVisualization.textContent = treeVisualization;
 }

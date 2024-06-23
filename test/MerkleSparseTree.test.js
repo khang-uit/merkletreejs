@@ -1,11 +1,11 @@
 const test = require('tape');
-const { SparseMerkleTree } = require('../'); // Adjust the path as needed
+const { MerkleSparseTree } = require('../'); // Adjust the path as needed
 
 // Test suite for SparseMerkleTree getProof and verifyProof methods
 test('SparseMerkleTree getProof and verifyProof methods', t => {
   t.plan(2);
 
-  const smt = new SparseMerkleTree(4); // Depth of 4 (16 leaves)
+  const smt = new MerkleSparseTree(4); // Depth of 4 (16 leaves)
 
   smt.insert('1000', 'value1');
   smt.insert('1110', 'value2');
@@ -32,7 +32,7 @@ test('SparseMerkleTree getProof and verifyProof methods', t => {
 test('SparseMerkleTree handling non-existent keys', t => {
   t.plan(1);
 
-  const smt = new SparseMerkleTree(4); // Depth of 4 (16 leaves)
+  const smt = new MerkleSparseTree(4); // Depth of 4 (16 leaves)
 
   smt.insert('1000', 'value1');
   smt.insert('1110', 'value2');

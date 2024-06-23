@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
+  const $keyValuePairs = document.getElementById('keyValuePairs');
   const $form = document.getElementById('form');
   const $getForm = document.getElementById('getForm');
   const $proofForm = document.getElementById('proofForm');
@@ -12,7 +13,28 @@ document.addEventListener('DOMContentLoaded', () => {
   const $flatLayersOutput = document.getElementById('flatLayersOutput');
   const $treeOutput = document.getElementById('treeOutput');
 
-  const trie = new window.MerklePatricia();
+  var trie;
+
+  function initializeTree() {
+    trie = new window.MerklePatricia();
+
+    const pairs = [
+      { key: '11355', value: 'value1' },
+      { key: '7d337', value: 'value2' },
+      { key: 'f9365', value: 'value3' },
+      { key: '7d397', value: 'value4' },
+    ];
+    $keyValuePairs.textContent = `11355, value1
+7d337, value2
+f9365, value3
+7d397, value4`
+    pairs.forEach(({key, value}) => {
+      trie.put(key, value);
+    });
+
+    updateOutputs();
+  }
+
 
   $form.addEventListener('submit', (event) => {
     event.preventDefault();
@@ -64,4 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const tree = trie.getTreeStructure();
     $treeOutput.textContent = tree; // Tree structure is a string representation
   }
+
+  window.addEventListener('DOMContentLoaded', initializeTree);
 });
+

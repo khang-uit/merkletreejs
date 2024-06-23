@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en-US">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,11 +9,9 @@
       font-family: Arial, sans-serif;
       line-height: 1.6;
     }
-
     form {
       margin-bottom: 1rem;
     }
-
     pre {
       white-space: pre-wrap;
       background-color: #f0f0f0;
@@ -22,9 +19,8 @@
     }
   </style>
 </head>
-
 <body>
-  <h1>Merkle Sparse Tree Example</h1>
+  <h1>Merkle Sparse Sum Tree Example</h1>
 
   <div>
     <h2>Input</h2>
@@ -34,9 +30,9 @@
       <button type="submit">Compute Tree</button>
     </form>
     <form id="multiInputForm">
-      <label for="multiInput">Number lines of test</label><br>
-      <input id="multiInput"></input><br>
-      <button type="submit">Insert Test Data</button>    
+      <label for="multiInput">Insert Test Data</label><br>
+      <input type="text" id="multiInput" placeholder="Enter test data"><br>
+      <button type="sumbit">Insert test data</button>
     </form>
     <div>
       <h3>Insertion Time</h3>
@@ -51,6 +47,8 @@
       <input type="text" id="verifyPath"><br>
       <label for="verifyValue">Value to Verify</label><br>
       <input type="text" id="verifyValue"><br>
+      <label for="verifySum">Sum to Verify</label><br>
+      <input type="text" id="verifySum"><br>
       <button type="submit">Verify</button>
     </form>
 
@@ -79,7 +77,7 @@
         <label>Proof</label>
         <pre id="proof"></pre>
       </div>
-      <button type="submit">Get proof</button>
+      <button type="submit">Generate Proof</button>
     </form>
     <div>
       <h3>Proof Generation Time</h3>
@@ -106,9 +104,9 @@
       <pre id="treeVisualization"></pre>
     </div>
   </div>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sha256/0.9.0/sha256.min.js"></script>
-  <script type="module" src="merkletree.js"></script>
-  <script type="module" src="sparse.js"></script>
-</body>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sha256/0.9.0/sha256.min.js"></script>
+  <script src="merkletree.js"></script>
+  <script src="sparse-sum.js"></script>
+</body>
 </html>

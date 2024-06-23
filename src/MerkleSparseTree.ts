@@ -1,6 +1,6 @@
 import { createHash } from 'crypto';
 
-export class SparseMerkleTree {
+export class MerkleSparseTree {
   private height: number;
   private defaultNodes: string[];
   private root: string;
@@ -104,6 +104,31 @@ export class SparseMerkleTree {
     return path[path.length - 1] === '0';
   }
 
+  // Get all layers of the tree
+  getLayers(): any {
+    const layers = [];
+    for (let i = 0; i <= this.height; i++) {
+      const levelNodes = [];
+      const levelSize = Math.pow(2, i);
+      for (let j = 0; j < levelSize; j++) {
+        const path = j.toString(2).padStart(i, '0');
+        const hash = this.nodes.get(path) || this.defaultNodes[this.height - i];
+        levelNodes.push({ path, hash });
+      }
+      layers.push(levelNodes);
+    }
+    return layers;
+  }
+
+  // Get flat layers of the tree
+  getFlatLayers(): any {
+    const flatLayers = [];
+    for (let [path, hash] of this.nodes) {
+      flatLayers.push({ path, hash });
+    }
+    return flatLayers;
+  }
+
   // Visualize the tree
   printTree() {
     console.log('Sparse Merkle Tree:');
@@ -119,10 +144,40 @@ export class SparseMerkleTree {
     }
     console.log('Root:', this.root);
   }
+
+  // Visualize the tree
+  getTreeVisualization(): string {
+    const visualize = (path: string, depth: number, prefix: string): string => {
+      const indent = '   '.repeat(depth);
+      const hash = this.nodes.get(path) || this.defaultNodes[this.height - path.length];
+
+      if (path.length === this.height) {
+        return `${indent}${prefix}${hash}\n`;
+      }
+
+      const leftChildPath = path + '0';
+      const rightChildPath = path + '1';
+      const leftChild = this.nodes.get(leftChildPath) || this.defaultNodes[this.height - path.length - 1];
+      const rightChild = this.nodes.get(rightChildPath) || this.defaultNodes[this.height - path.length - 1];
+
+      if (leftChild !== rightChild) {
+        return `${indent}${prefix}${hash}\n` +
+          visualize(leftChildPath, depth + 1, '├─ ') +
+          visualize(rightChildPath, depth + 1, '└─ ');
+      }
+
+      return `${indent}${prefix}${hash}\n` +
+        visualize(leftChildPath, depth + 1, '└─ ');
+    };
+
+    const rootPath = ''; // Assuming the root path is empty or initialize accordingly
+    return visualize(rootPath, 0, '└─ ');
+  }
 }
 
 if (typeof window !== 'undefined') {
-  ;(window as any).SparseMerkleTree = SparseMerkleTree
+  ; (window as any).MerkleSparseTree = MerkleSparseTree
+
 }
 
 
