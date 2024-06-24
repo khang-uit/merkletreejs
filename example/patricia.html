@@ -29,6 +29,15 @@
       <textarea id="keyValuePairs" rows="5" cols="50"></textarea><br>
       <button type="submit">Insert</button>
     </form>
+    <form id="multiInputForm">
+      <label for="multiKeyValuePairs">Insert Test Data</label><br>
+      <input type="text" id="multiKeyValuePairs" placeholder="Enter test data"><br>
+      <button type="sumbit">Insert test data</button>
+    </form>
+    <div>
+      <h3>Insertion Time</h3>
+      <pre id="insertionTimeOutput"></pre>
+    </div>
   </div>
 
   <div>
@@ -52,6 +61,10 @@
       <button type="submit">Generate Proof</button>
     </form>
     <div>
+      <h3>Proof Generation Time</h3>
+      <pre id="proofGenerationTimeOutput"></pre>
+    </div>
+    <div>
       <h3>Proof</h3>
       <pre id="proofOutput"></pre>
     </div>
@@ -68,6 +81,10 @@
       <input type="text" id="rootHash"><br>
       <button type="submit">Verify Proof</button>
     </form>
+    <div>
+      <h3>Verification Time</h3>
+      <pre id="verificationTimeOutput"></pre>
+    </div>
     <div>
       <h3>Verification Result</h3>
       <pre id="verifyOutput"></pre>

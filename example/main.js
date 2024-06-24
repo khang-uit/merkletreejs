@@ -1,5 +1,7 @@
 // elements
 var $form = document.getElementById('form')
+var $multiInputForm = document.getElementById('multiInputForm')
+var $multiInput = document.getElementById('multiInput')
 var $input = document.getElementById('input')
 var $options = document.querySelectorAll('input[name="option"]')
 var $fillDefaultHashView = document.getElementById('fillDefaultHashView')
@@ -18,6 +20,10 @@ var $verifyProof = document.getElementById('verifyProof')
 var $verifyLeaf = document.getElementById('verifyLeaf')
 var $verifyRoot = document.getElementById('verifyRoot')
 var $verified = document.getElementById('verified')
+var $insertionTimeOutput = document.getElementById('insertionTimeOutput');
+var $proofGenerationTimeOutput = document.getElementById('proofGenerationTimeOutput');
+var $verificationTimeOutput = document.getElementById('verificationTimeOutput');
+
 
 // variables
 
@@ -39,7 +45,7 @@ var tree
 
 // functions
 
-function compute () {
+function compute() {
   const value = getInputValue()
   const leaves = parseInput(value)
   const hashFn = getHashFn()
@@ -47,7 +53,9 @@ function compute () {
   console.log('input leaves:', leaves)
   console.log('hash:', getHashType())
   console.log('options:', options)
+  const insertionTime = performance.now();
   tree = new window.MerkleTree(leaves, hashFn, options)
+  $insertionTimeOutput.textContent = `Insertion Time: ${performance.now() - insertionTime} ms`;
   const hexRoot = tree.getHexRoot()
   const hexLeaves = tree.getHexLeaves()
   const hexLayers = tree.getHexLayers()
@@ -66,14 +74,64 @@ function compute () {
   setVerified('-')
 }
 
-function getOptions () {
+function computeMulti(numLines) {
+  function generateHexString(length = 32) {
+    let hexString = '0x';
+    for (let i = 0; i < length; i++) {
+        const randomValue = Math.floor(Math.random() * 256); // Generate a random byte (0-255)
+        const hex = randomValue.toString(16).padStart(2, '0'); // Convert to hex and pad with leading zero if necessary
+        hexString += hex;
+    }
+    return hexString;
+}
+  function generateRandomData(numLines) {
+    const testData = [];
+    for (let i = 0; i < numLines; i++) {
+      let value = generateHexString()
+      if (i == numLines - 1) {
+        {
+          console.log(value)
+        }
+      }
+      testData.push(value);
+    }
+    return testData;
+  }
+
+  const testData = generateRandomData(numLines);
+  const hashFn = getHashFn()
+  const options = getOptions()
+  console.log('input leaves:', testData)
+  console.log('hash:', getHashType())
+  console.log('options:', options)
+  const insertionTime = performance.now();
+  // testData.forEach((leaf) => {
+  //   tree.addLeaf(leaf);
+  tree = new window.MerkleTree(testData, hashFn, options)
+
+  $insertionTimeOutput.textContent = `Insertion Time: ${performance.now() - insertionTime} ms`;
+  const hexRoot = tree.getHexRoot()
+  // const hexLeaves = tree.getHexLeaves()
+  // const hexLayers = tree.getHexLayers()
+  // const hexFlatLayers = tree.getHexLayersFlat()
+  setRootValue(hexRoot)
+  // setLeavesValue(JSON.stringify(hexLeaves, null, 2))
+  // setLayersValue(JSON.stringify(hexLayers, null, 2))
+  // setFlatLayersValue(JSON.stringify(hexFlatLayers, null, 2))
+  // setTreeValue(tree.toString())
+  // updateLeaveOptions(hexLeaves)
+  updateProof(0)
+  // setVerified('-')
+}
+
+function getOptions() {
   const fillDefaultHash = getDefaultFillHashInput()
   return Object.assign({}, options, {
     fillDefaultHash: options.fillDefaultHash ? fillDefaultHash : undefined
   })
 }
 
-function parseInput (value) {
+function parseInput(value) {
   value = value.trim().replace(/'/gi, '"')
   try {
     return JSON.parse(value)
@@ -84,7 +142,7 @@ function parseInput (value) {
   }
 }
 
-function updateLeaveOptions (leaves) {
+function updateLeaveOptions(leaves) {
   $leaveSelect.innerHTML = ''
   leaves.forEach(function (leaf, i) {
     const el = document.createElement('option')
@@ -94,7 +152,7 @@ function updateLeaveOptions (leaves) {
   })
 }
 
-function updateProof (index) {
+function updateProof(index) {
   setProof('')
   if (!tree) {
     return
@@ -104,61 +162,66 @@ function updateProof (index) {
     return
   }
   const leaf = leaves[index]
+  const proofGeneration = performance.now();
+  console.log(leaf)
   const proof = tree.getHexProof(leaf)
+  $proofGenerationTimeOutput.textContent = `Proof Time: ${performance.now() - proofGeneration} ms`;
   console.log('proof:', proof)
   setProof(JSON.stringify(proof, null, 2))
 }
 
-function setVerified (verified) {
+function setVerified(verified) {
   $verified.textContent = verified
 }
 
-function verify () {
+function verify() {
   setVerified('-')
   const proof = getVerifyProof()
   const leaf = getVerifyLeaf()
   const root = getVerifyRoot()
   const hashFn = getHashFn()
   const options = getOptions()
+  const verifyGeneration = performance.now();
   const verified = window.MerkleTree.verify(proof, leaf, root, hashFn, options)
+  $verificationTimeOutput.textContent = `Verification Time: ${performance.now() - verifyGeneration} ms`
   setVerified(`${verified}`)
 }
 
 // getters
 
-function getHashType () {
+function getHashType() {
   const $hash = document.querySelector('input[name="hash"]:checked')
   return $hash.value.trim()
 }
 
-function getHashFn () {
+function getHashFn() {
   const key = getHashType()
   return hashFns[key]
 }
 
-function getDefaultFillHashInput () {
+function getDefaultFillHashInput() {
   return $fillDefaultHash.value.trim()
 }
 
-function getInputValue (value) {
+function getInputValue(value) {
   return $input.value.trim()
 }
 
-function getVerifyProof () {
+function getVerifyProof() {
   return parseInput($verifyProof.value.trim())
 }
 
-function getVerifyLeaf () {
+function getVerifyLeaf() {
   return $verifyLeaf.value.trim()
 }
 
-function getVerifyRoot () {
+function getVerifyRoot() {
   return $verifyRoot.value.trim()
 }
 
 // setters
 
-function setHashType (value) {
+function setHashType(value) {
   if (!value) {
     return
   }
@@ -169,7 +232,7 @@ function setHashType (value) {
   $hash.checked = true
 }
 
-function setInputValue (value, onlySave) {
+function setInputValue(value, onlySave) {
   if (!onlySave) {
     $input.value = value
   }
@@ -180,27 +243,27 @@ function setInputValue (value, onlySave) {
   }
 }
 
-function setRootValue (value) {
+function setRootValue(value) {
   $root.textContent = value
 }
 
-function setLeavesValue (value) {
+function setLeavesValue(value) {
   $leaves.textContent = value
 }
 
-function setLayersValue (value) {
+function setLayersValue(value) {
   $layers.textContent = value
 }
 
-function setFlatLayersValue (value) {
+function setFlatLayersValue(value) {
   $flatLayers.textContent = value
 }
 
-function setTreeValue (value) {
+function setTreeValue(value) {
   $tree.innerText = value
 }
 
-function setHashValue (value) {
+function setHashValue(value) {
   try {
     localStorage.setItem('hash', value)
   } catch (err) {
@@ -208,7 +271,7 @@ function setHashValue (value) {
   }
 }
 
-function setOptionValue (key, enabled, onlySave) {
+function setOptionValue(key, enabled, onlySave) {
   try {
     if (!onlySave) {
       var $option = document.querySelector(`input[name="option"][id="${key}"]`)
@@ -224,7 +287,7 @@ function setOptionValue (key, enabled, onlySave) {
   }
 }
 
-function setFillDefaultHash (value, onlySave) {
+function setFillDefaultHash(value, onlySave) {
   if (!onlySave) {
     $fillDefaultHash.value = value
   }
@@ -235,11 +298,11 @@ function setFillDefaultHash (value, onlySave) {
   }
 }
 
-function setProof (value) {
+function setProof(value) {
   $proof.textContent = value
 }
 
-function setVerifyProof (value, onlySave) {
+function setVerifyProof(value, onlySave) {
   if (!onlySave) {
     $verifyProof.value = value
   }
@@ -250,7 +313,7 @@ function setVerifyProof (value, onlySave) {
   }
 }
 
-function setVerifyLeaf (value, onlySave) {
+function setVerifyLeaf(value, onlySave) {
   if (!onlySave) {
     $verifyLeaf.value = value
   }
@@ -261,7 +324,7 @@ function setVerifyLeaf (value, onlySave) {
   }
 }
 
-function setVerifyRoot (value, onlySave) {
+function setVerifyRoot(value, onlySave) {
   if (!onlySave) {
     $verifyRoot.value = value
   }
@@ -272,7 +335,7 @@ function setVerifyRoot (value, onlySave) {
   }
 }
 
-function toggleFillDefaultHashView () {
+function toggleFillDefaultHashView() {
   if (options.fillDefaultHash) {
     $fillDefaultHashView.style.display = 'block'
   } else {
@@ -285,6 +348,12 @@ function toggleFillDefaultHashView () {
 $form.addEventListener('submit', function (event) {
   event.preventDefault()
   compute()
+})
+
+$multiInputForm.addEventListener('submit', function (event) {
+  event.preventDefault()
+  const numLines = $multiInput.value.trim();
+  computeMulti(numLines)
 })
 
 $verifyForm.addEventListener('submit', function (event) {
@@ -360,7 +429,7 @@ $verifyRoot.addEventListener('input', function (event) {
 
 // init
 
-function load () {
+function load() {
   try {
     const value = localStorage.getItem('input')
     if (value) {
@@ -422,7 +491,7 @@ function load () {
   }
 }
 
-function main () {
+function main() {
   load()
   toggleFillDefaultHashView()
   compute()

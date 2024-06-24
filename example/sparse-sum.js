@@ -71,7 +71,6 @@ function insertGeneratedDataIntoTree(numLines, height) {
 
     const insertionTime = performance.now();
     testData.forEach(function (leaf) {
-        console.log(leaf)
         tree.insert(leaf.path, leaf.value, leaf.sum);
     });
     $insertionTimeOutput.textContent = `Insertion Time: ${performance.now() - insertionTime} ms`;
@@ -133,14 +132,14 @@ $verifyForm.addEventListener('submit', function (event) {
     const path = document.getElementById('verifyPath').value.trim();
     const value = document.getElementById('verifyValue').value.trim();
     const sum = BigInt(document.getElementById('verifySum').value.trim());
-    const proofGeneration = performance.now();
+    const verifyGeneration = performance.now();
     const proof = tree.generateProof(path);
     const root = tree.getRoot();
     const isValid = tree.verifyProof(path, value, sum, proof, root);
     $verifyOutput.textContent = `Verification: ${isValid}`;
     $proofOutput.textContent = `Proof: ${JSON.stringify(proof, (key, value) =>
         typeof value === 'bigint' ? value.toString() : value, 2)}`;
-    $verificationTimeOutput.textContent = `Verification Time: ${performance.now() - proofGeneration} ms`
+    $verificationTimeOutput.textContent = `Verification Time: ${performance.now() - verifyGeneration} ms`
 });
 
 function updateOutputs() {

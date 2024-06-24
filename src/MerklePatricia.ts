@@ -4,23 +4,23 @@ type TrieNode = LeafNode | BranchNode | ExtensionNode | null;
 
 interface LeafNode {
     type: 'leaf';
-    key: number[];
-    value: string;
-    hash: string;
+    key: Buffer;
+    value: Buffer;
+    hash: Buffer;
 }
 
 interface BranchNode {
     type: 'branch';
     branches: TrieNode[];
-    value: string | null;
-    hash: string;
+    value: Buffer | null;
+    hash: Buffer;
 }
 
 interface ExtensionNode {
     type: 'extension';
-    key: number[];
+    key: Buffer;
     nextNode: TrieNode;
-    hash: string;
+    hash: Buffer;
 }
 
 export class MerklePatricia {
@@ -33,7 +33,7 @@ export class MerklePatricia {
     // Method to add a key-value pair to the trie
     put(key: string, value: string): void {
         const encodedKey = this.encodeKey(key);
-        this.root = this.insertNode(this.root, encodedKey, value);
+        this.root = this.insertNode(this.root, encodedKey, Buffer.from(value));
         if (this.root) {
             this.root.hash = this.computeNodeHash(this.root);
         }
@@ -42,16 +42,17 @@ export class MerklePatricia {
     // Method to get a value by key from the trie
     get(key: string): string | null {
         const encodedKey = this.encodeKey(key);
-        return this.getNode(this.root, encodedKey);
+        const value = this.getNode(this.root, encodedKey);
+        return value ? value.toString() : null;
     }
 
     // Helper method to encode the key
-    private encodeKey(key: string): number[] {
-        return Array.from(key).map(c => parseInt(c, 16))
+    private encodeKey(key: string): Buffer {
+        return Buffer.from(Array.from(key).map(c => parseInt(c, 16)));
     }
 
     // Method to insert a node into the trie
-    private insertNode(node: TrieNode, key: number[], value: string): TrieNode {
+    private insertNode(node: TrieNode, key: Buffer, value: Buffer): TrieNode {
         if (!node) {
             return this.createLeafNode(key, value);
         }
@@ -64,7 +65,7 @@ export class MerklePatricia {
     }
 
     // Method to handle insertion into a leaf node
-    private handleLeafNode(node: LeafNode, key: number[], value: string): TrieNode {
+    private handleLeafNode(node: LeafNode, key: Buffer, value: Buffer): TrieNode {
         const matchingLength = this.matchingPrefixLength(node.key, key);
         if (matchingLength === node.key.length) {
             node.value = value;
@@ -76,7 +77,7 @@ export class MerklePatricia {
             type: 'branch',
             branches: Array(16).fill(null),
             value: null,
-            hash: ''
+            hash: Buffer.alloc(0)
         };
         newBranchNode.branches[node.key[matchingLength]] = this.insertNode(null, node.key.slice(matchingLength + 1), node.value);
         newBranchNode.branches[key[matchingLength]] = this.insertNode(null, key.slice(matchingLength + 1), value);
@@ -85,14 +86,14 @@ export class MerklePatricia {
             type: 'extension',
             key: key.slice(0, matchingLength),
             nextNode: newBranchNode,
-            hash: ''
+            hash: Buffer.alloc(0)
         };
-        newExtensionNode.hash = this.computeNodeHash(newExtensionNode)
-        return newExtensionNode
+        newExtensionNode.hash = this.computeNodeHash(newExtensionNode);
+        return newExtensionNode;
     }
 
     // Method to handle insertion into a branch or extension node
-    private handleBranchOrExtensionNode(node: BranchNode | ExtensionNode, key: number[], value: string): TrieNode {
+    private handleBranchOrExtensionNode(node: BranchNode | ExtensionNode, key: Buffer, value: Buffer): TrieNode {
         if (node.type === 'branch') {
             if (key.length === 0) {
                 node.value = value;
@@ -116,35 +117,35 @@ export class MerklePatricia {
     }
 
     // Method to create a leaf node
-    private createLeafNode(key: number[], value: string): LeafNode {
-        const node: LeafNode = { type: 'leaf', key, value, hash: '' };
+    private createLeafNode(key: Buffer, value: Buffer): LeafNode {
+        const node: LeafNode = { type: 'leaf', key, value, hash: Buffer.alloc(0) };
         node.hash = this.computeNodeHash(node);
         return node;
     }
 
     // Method to split an extension node
-    private splitExtensionNode(node: ExtensionNode, key: number[], value: string, matchingLength: number): TrieNode {
+    private splitExtensionNode(node: ExtensionNode, key: Buffer, value: Buffer, matchingLength: number): TrieNode {
         const newBranchNode: BranchNode = {
             type: 'branch',
             branches: Array(16).fill(null),
             value: null,
-            hash: ''
+            hash: Buffer.alloc(0)
         };
-        newBranchNode.branches[node.key[matchingLength]] = this.insertNode(null, node.key.slice(matchingLength + 1), this.getNode(node.nextNode, []));
+        newBranchNode.branches[node.key[matchingLength]] = this.insertNode(null, node.key.slice(matchingLength + 1), this.getNode(node.nextNode, Buffer.alloc(0)) || Buffer.alloc(0));
         newBranchNode.branches[key[matchingLength]] = this.insertNode(null, key.slice(matchingLength + 1), value);
         newBranchNode.hash = this.computeNodeHash(newBranchNode);
         const newExtensionNode: ExtensionNode = {
             type: 'extension',
             key: key.slice(0, matchingLength),
             nextNode: newBranchNode,
-            hash: ''
+            hash: Buffer.alloc(0)
         };
-        newExtensionNode.hash = this.computeNodeHash(newExtensionNode)
-        return newExtensionNode
+        newExtensionNode.hash = this.computeNodeHash(newExtensionNode);
+        return newExtensionNode;
     }
 
     // Method to get a node by key from the trie
-    private getNode(node: TrieNode, key: number[]): string | null {
+    private getNode(node: TrieNode, key: Buffer): Buffer | null {
         if (!node) return null;
 
         if (node.type === 'leaf') {
@@ -171,7 +172,7 @@ export class MerklePatricia {
     }
 
     // Helper method to find matching prefix length
-    private matchingPrefixLength(key1: number[], key2: number[]): number {
+    private matchingPrefixLength(key1: Buffer, key2: Buffer): number {
         let i = 0;
         while (i < key1.length && i < key2.length && key1[i] === key2[i]) {
             i++;
@@ -179,13 +180,9 @@ export class MerklePatricia {
         return i;
     }
 
-    // Helper method to compare arrays
-    private arrayEqual(arr1: number[], arr2: number[]): boolean {
-        if (arr1.length !== arr2.length) return false;
-        for (let i = 0; i < arr1.length; i++) {
-            if (arr1[i] !== arr2[i]) return false;
-        }
-        return true;
+    // Helper method to compare buffers
+    private arrayEqual(arr1: Buffer, arr2: Buffer): boolean {
+        return arr1.equals(arr2);
     }
 
     // Method to generate a proof for a given key
@@ -193,10 +190,10 @@ export class MerklePatricia {
         const encodedKey = this.encodeKey(key);
         const proof: any[] = [];
         this.generateProofRecursive(this.root, encodedKey, proof);
-        return proof;
+        return proof.map(node => ({ ...node, hash: node.hash.toString('hex') }));
     }
 
-    private generateProofRecursive(node: TrieNode, key: number[], proof: any[]): void {
+    private generateProofRecursive(node: TrieNode, key: Buffer, proof: any[]): void {
         if (!node) return;
 
         proof.push(node);
@@ -220,13 +217,16 @@ export class MerklePatricia {
     // Method to verify a proof for a given key
     verifyProof(rootHash: string, key: string, proof: any[]): boolean {
         const encodedKey = this.encodeKey(key);
-        let currentHash = rootHash;
+        let currentHash = Buffer.from(rootHash, 'hex');
         let currentKey = encodedKey;
 
         for (let i = 0; i < proof.length; i++) {
             const node = proof[i];
-            const nodeHash = this.computeNodeHash(node);
-            if (nodeHash !== currentHash) {
+            const nodeHash = this.computeNodeHash({
+                ...node,
+                hash: Buffer.from(node.hash, 'hex')
+            });
+            if (!nodeHash.equals(currentHash)) {
                 return false;
             }
 
@@ -234,14 +234,14 @@ export class MerklePatricia {
                 if (currentKey.length === 0) {
                     return node.value !== null;
                 }
-                currentHash = node.branches[currentKey[0]] ? node.branches[currentKey[0]].hash : '';
+                currentHash = node.branches[currentKey[0]] ? Buffer.from(node.branches[currentKey[0]].hash, 'hex') : Buffer.alloc(0);
                 currentKey = currentKey.slice(1);
             } else if (node.type === 'extension') {
                 const matchingLength = this.matchingPrefixLength(node.key, currentKey);
                 if (matchingLength !== node.key.length) {
                     return false;
                 }
-                currentHash = node.nextNode ? node.nextNode.hash : '';
+                currentHash = node.nextNode ? Buffer.from(node.nextNode.hash, 'hex') : Buffer.alloc(0);
                 currentKey = currentKey.slice(matchingLength);
             } else if (node.type === 'leaf') {
                 if (!this.arrayEqual(node.key, currentKey)) {
@@ -255,23 +255,23 @@ export class MerklePatricia {
     }
 
     // Method to compute hash for a node
-    private computeNodeHash(node: TrieNode): string {
-        if (!node) return '';
+    private computeNodeHash(node: TrieNode): Buffer {
+        if (!node) return Buffer.alloc(0);
 
         if (node.type === 'leaf') {
-            return keccak256(node.key.toString() + node.value).toString('hex');
+            return keccak256(Buffer.concat([node.key, node.value]));
         } else if (node.type === 'branch') {
-            const childHashes = node.branches.map(branch => branch ? branch.hash : '').join('');
-            return keccak256(childHashes + (node.value || '')).toString('hex');
+            const childHashes = node.branches.map(branch => branch ? branch.hash : Buffer.alloc(0));
+            return keccak256(Buffer.concat([...childHashes, node.value || Buffer.alloc(0)]));
         } else if (node.type === 'extension') {
-            return keccak256(node.key.toString() + (node.nextNode ? node.nextNode.hash : '')).toString('hex');
+            return keccak256(Buffer.concat([node.key, node.nextNode ? node.nextNode.hash : Buffer.alloc(0)]));
         }
-        return '';
+        return Buffer.alloc(0);
     }
 
     // Method to get the root hash of the trie
     get rootHash(): string {
-        return this.root ? this.root.hash : '';
+        return this.root ? this.root.hash.toString('hex') : '';
     }
 
     // Method to get all leaf node hashes
@@ -285,7 +285,7 @@ export class MerklePatricia {
         if (!node) return;
 
         if (node.type === 'leaf') {
-            leaves.push(node.hash);
+            leaves.push(node.hash.toString('hex'));
         } else if (node.type === 'branch') {
             for (const branch of node.branches) {
                 this.collectLeaves(branch, leaves);
@@ -309,7 +309,7 @@ export class MerklePatricia {
             layers.push('');
         }
 
-        layers[depth] += node.hash;
+        layers[depth] += node.hash.toString('hex');
 
         if (node.type === 'branch') {
             for (const branch of node.branches) {
@@ -328,7 +328,7 @@ export class MerklePatricia {
     private buildTreeStructure(node: TrieNode, indent: string): string {
         if (!node) return '';
 
-        let result = `${indent}└─ ${node.hash}\n`;
+        let result = `${indent}└─ ${node.hash.toString('hex')} ${node.type === 'branch' ? JSON.stringify(node.branches.map(branch => branch ? branch.hash.toString('hex') : null)) : node.key.toString('hex')}\n`;
 
         if (node.type === 'branch') {
             const newIndent = indent + '   ';

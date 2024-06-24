@@ -20,7 +20,7 @@ var tree;
 
 function initializeTree() {
     const height = 4; // Set the height of your tree here
-    tree = new window.MerkleSparseTree(height);
+    tree = new window.MerkleSparseTree(height, []);
 
     const leaves = [
         { path: '1000', value: 'value1' },
@@ -66,12 +66,10 @@ function generateRandomData(numLines, height) {
 // Function to insert generated test data into the Merkle tree
 function insertGeneratedDataIntoTree(numLines, height) {
     const testData = generateRandomData(numLines, height);
-    tree = new window.MerkleSparseTree(height);
 
     const insertionTime = performance.now();
-    testData.forEach(function (leaf) {
-        tree.insert(leaf.path, leaf.value);
-    });
+    tree = new window.MerkleSparseTree(height, testData);
+
     $insertionTimeOutput.textContent = `Insertion Time: ${performance.now() - insertionTime} ms`;
 }
 
@@ -131,6 +129,7 @@ $verifyForm.addEventListener('submit', function (event) {
     const proofGeneration = performance.now();
     const proof = tree.generateProof(path);
     const root = tree.getRoot();
+    console.log(root)
     const isValid = tree.verifyProof(path, value, proof, root);
     $verifyOutput.textContent = `Verification: ${isValid}`;
     $proofOutput.textContent = `${JSON.stringify(proof, null, 2)}`;

@@ -40,6 +40,12 @@ export class MerkleSparseSumTree {
     return this.root;
   }
 
+  
+  // Get the node at a given path
+  getNode(path: string): { hash: string, sum: BigInt } {
+    return this.nodes.get(path) || this.defaultNodes[this.height - path.length];
+  }
+
   // Insert a leaf into the tree
   insert(path: string, value: string, sum: BigInt) {
     if (path.length !== this.height) throw new Error("Path length does not match tree height.");
@@ -158,7 +164,7 @@ export class MerkleSparseSumTree {
       const indent = '   '.repeat(depth);
   
       if (path.length === this.height) {
-        return `${indent}${prefix}${node.hash}\n`;
+        return `${indent}${prefix}${node.hash} ${path} ${node.sum}\n`;
       }
   
       const leftChildPath = path + '0';
@@ -167,12 +173,12 @@ export class MerkleSparseSumTree {
       const rightChild = this.nodes.get(rightChildPath) || this.defaultNodes[this.height - path.length - 1];
   
       if (leftChild.hash !== rightChild.hash) {
-        return `${indent}${prefix}${node.hash}\n` +
+        return `${indent}${prefix}${node.hash} ${path} ${node.sum}\n` +
                `${visualize(leftChild, leftChildPath, depth + 1, '├─ ')}` +
                `${visualize(rightChild, rightChildPath, depth + 1, '└─ ')}`;
       }
       
-      return `${indent}${prefix}${node.hash}\n` +
+      return `${indent}${prefix}${node.hash} ${path} ${node.sum}\n` +
              `${visualize(leftChild, leftChildPath, depth + 1, '└─ ')}`;
     };
   
