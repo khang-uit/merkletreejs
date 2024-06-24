@@ -1,29 +1,33 @@
+import { Base } from './Base';
 import { createHash } from 'crypto';
 
 // Type definition for the hash function
-type THashFn = (value: string) => string;
 
-export class MerkleSparseSumTree {
+export class MerkleSparseSumTree extends Base {
   private height: number;
-  private defaultNodes: { hash: string, sum: BigInt }[];
-  private root: { hash: string, sum: BigInt };
-  private nodes: Map<string, { hash: string, sum: BigInt }>;
-  private hashFn: THashFn;
+  private defaultNodes: { hash: Buffer, sum: BigInt }[];
+  private root: { hash: Buffer, sum: BigInt };
+  private nodes: Map<string, { hash: Buffer, sum: BigInt }>;
 
-  constructor(height: number, hashFn: THashFn) {
+  constructor(height: number, leaves: { path: string, value: string, sum: BigInt }[] = []) {
+    super();
     if (height <= 0) throw new Error("Tree height must be greater than 0.");
     this.height = height;
-    this.hashFn = hashFn;
     this.defaultNodes = this.generateDefaultNodes();
-    this.root = this.defaultNodes[this.height];
     this.nodes = new Map();
+    this.root = this.defaultNodes[this.height];
+
+    // Insert the initial leaves efficiently
+    this.insertLeaves(leaves);
+    // Update the branches after inserting all leaves
+    this.updateBranches();
   }
 
   // Generate default nodes for an empty tree
-  private generateDefaultNodes(): { hash: string, sum: BigInt }[] {
-    const defaultNodes = [{ hash: this.hashFn(''), sum: BigInt(0) }];
+  private generateDefaultNodes(): { hash: Buffer, sum: BigInt }[] {
+    const defaultNodes = [{ hash: this.hash(this.bufferify('')), sum: BigInt(0) }];
     for (let i = 1; i <= this.height; i++) {
-      const hash = this.hashFn(defaultNodes[i - 1].hash + defaultNodes[i - 1].hash);
+      const hash = this.hash(Buffer.concat([defaultNodes[i - 1].hash, defaultNodes[i - 1].hash]));
       const sum = BigInt(0);
       defaultNodes.push({ hash, sum });
     }
@@ -31,31 +35,40 @@ export class MerkleSparseSumTree {
   }
 
   // Hashing function
-  private hash(data: string): string {
-    return createHash('sha256').update(data).digest('hex');
+  private hash(data: Buffer): Buffer {
+    return createHash('sha256').update(data).digest();
   }
 
   // Get the root of the tree
   getRoot(): { hash: string, sum: BigInt } {
-    return this.root;
+    return { hash: this.root.hash.toString('hex'), sum: this.root.sum };
   }
 
-  
   // Get the node at a given path
   getNode(path: string): { hash: string, sum: BigInt } {
-    return this.nodes.get(path) || this.defaultNodes[this.height - path.length];
+    const node = this.nodes.get(path) || this.defaultNodes[this.height - path.length];
+    return { hash: node.hash.toString('hex'), sum: node.sum };
   }
 
   // Insert a leaf into the tree
   insert(path: string, value: string, sum: BigInt) {
     if (path.length !== this.height) throw new Error("Path length does not match tree height.");
-    const leafHash = this.hashFn(value);
+    const leafHash = this.hash(this.bufferify(value));
     this.nodes.set(path, { hash: leafHash, sum });
     this.root = this.updatePath(path, { hash: leafHash, sum });
   }
 
+  // Insert multiple leaves into the tree efficiently
+  private insertLeaves(leaves: { path: string, value: string, sum: BigInt }[]) {
+    for (const leaf of leaves) {
+      const leafHash = this.hash(this.bufferify(leaf.value));
+      this.nodes.set(leaf.path, { hash: leafHash, sum: leaf.sum });
+    }
+    this.updateBranches();
+  }
+
   // Update the path from a leaf to the root
-  private updatePath(path: string, value: { hash: string, sum: BigInt }): { hash: string, sum: BigInt } {
+  private updatePath(path: string, value: { hash: Buffer, sum: BigInt }): { hash: Buffer, sum: BigInt } {
     let currentNode = value;
     let currentPath = path;
     this.nodes.set(currentPath, currentNode);
@@ -63,14 +76,44 @@ export class MerkleSparseSumTree {
       const siblingPath = this.getSiblingPath(currentPath);
       const siblingNode = this.nodes.get(siblingPath) || this.defaultNodes[this.height - i - 1];
       const combinedHash = this.isLeftNode(currentPath)
-        ? this.hashFn(currentNode.hash + siblingNode.hash)
-        : this.hashFn(siblingNode.hash + currentNode.hash);
+        ? this.hash(Buffer.concat([currentNode.hash, siblingNode.hash]))
+        : this.hash(Buffer.concat([siblingNode.hash, currentNode.hash]));
       const combinedSum = BigInt(currentNode.sum) + BigInt(siblingNode.sum);
       currentNode = { hash: combinedHash, sum: combinedSum };
       currentPath = this.getParentPath(currentPath);
       this.nodes.set(currentPath, currentNode);
     }
     return currentNode;
+  }
+
+  // Update all branches of the tree from leaves to root
+  private updateBranches() {
+    // Bắt đầu từ mức độ sâu nhất (lá) và di chuyển lên đến gốc
+    for (let level = this.height - 1; level >= 0; level--) {
+      const numNodes = 2 ** level; // Số lượng nút ở mức hiện tại
+      for (let index = 0; index < numNodes; index++) {
+        let path = '';
+        if (level === 0) {
+          path = '';
+        } else {
+          path = index.toString(2).padStart(level, '0');
+        }
+        const leftChildPath = path + '0';
+        const rightChildPath = path + '1';
+
+        // Lấy các giá trị băm của các nút con trái và phải
+        const leftChild = this.nodes.get(leftChildPath) || this.defaultNodes[this.height - level - 1];
+        const rightChild = this.nodes.get(rightChildPath) || this.defaultNodes[this.height - level - 1];
+
+        // Tính giá trị băm của nút cha từ các nút con
+        const parentHash = this.hash(Buffer.concat([leftChild.hash, rightChild.hash]));
+        const parentSum = BigInt(leftChild.sum) + BigInt(rightChild.sum);
+        this.nodes.set(path, { hash: parentHash, sum: parentSum }); // Cập nhật nút cha
+      }
+    }
+
+    // Cập nhật gốc của cây
+    this.root = this.nodes.get('') || this.defaultNodes[this.height];
   }
 
   // Generate a proof for a given key
@@ -81,7 +124,7 @@ export class MerkleSparseSumTree {
     for (let i = this.height - 1; i >= 0; i--) {
       const siblingPath = this.getSiblingPath(currentPath);
       const siblingNode = this.nodes.get(siblingPath) || this.defaultNodes[this.height - i - 1];
-      proof.push(siblingNode);
+      proof.push({ hash: siblingNode.hash.toString('hex'), sum: siblingNode.sum });
       currentPath = this.getParentPath(currentPath);
     }
     return proof;
@@ -90,18 +133,19 @@ export class MerkleSparseSumTree {
   // Verify a proof
   verifyProof(path: string, value: string, sum: BigInt, proof: { hash: string, sum: BigInt }[], root: { hash: string, sum: BigInt }): boolean {
     if (path.length !== this.height) throw new Error("Path length does not match tree height.");
-    let currentNode = { hash: this.hashFn(value), sum };
+    let currentNode = { hash: this.hash(this.bufferify(value)), sum };
     let currentPath = path;
     for (let i = this.height - 1; i >= 0; i--) {
       const siblingNode = proof[this.height - i - 1];
+      const siblingHash = Buffer.from(siblingNode.hash, 'hex');
       const combinedHash = this.isLeftNode(currentPath)
-        ? this.hashFn(currentNode.hash + siblingNode.hash)
-        : this.hashFn(siblingNode.hash + currentNode.hash);
+        ? this.hash(Buffer.concat([currentNode.hash, siblingHash]))
+        : this.hash(Buffer.concat([siblingHash, currentNode.hash]));
       const combinedSum = BigInt(currentNode.sum) + BigInt(siblingNode.sum);
       currentNode = { hash: combinedHash, sum: combinedSum };
       currentPath = this.getParentPath(currentPath);
     }
-    return currentNode.hash === root.hash && currentNode.sum === root.sum;
+    return currentNode.hash.equals(Buffer.from(root.hash, 'hex')) && currentNode.sum === root.sum;
   }
 
   // Helper function to get the sibling path
@@ -127,7 +171,7 @@ export class MerkleSparseSumTree {
     for (let i = 0; i < leafCount; i++) {
       const path = i.toString(2).padStart(this.height, '0');
       const leaf = this.nodes.get(path) || this.defaultNodes[0];
-      leaves.push(leaf);
+      leaves.push({ hash: leaf.hash.toString('hex'), sum: leaf.sum });
     }
     return leaves;
   }
@@ -141,7 +185,7 @@ export class MerkleSparseSumTree {
       for (let j = 0; j < levelSize; j++) {
         const path = j.toString(2).padStart(i, '0');
         const node = this.nodes.get(path) || this.defaultNodes[this.height - i];
-        levelNodes.push(node);
+        levelNodes.push({ hash: node.hash.toString('hex'), sum: node.sum });
       }
       layers.push(levelNodes);
     }
@@ -160,11 +204,11 @@ export class MerkleSparseSumTree {
   }
 
   getTreeVisualization(): string {
-    const visualize = (node: { hash: string, sum: BigInt }, path: string, depth: number, prefix: string): string => {
+    const visualize = (node: { hash: Buffer, sum: BigInt }, path: string, depth: number, prefix: string): string => {
       const indent = '   '.repeat(depth);
   
       if (path.length === this.height) {
-        return `${indent}${prefix}${node.hash} ${path} ${node.sum}\n`;
+        return `${indent}${prefix}${node.hash.toString('hex')} ${path} ${node.sum}\n`;
       }
   
       const leftChildPath = path + '0';
@@ -172,13 +216,13 @@ export class MerkleSparseSumTree {
       const leftChild = this.nodes.get(leftChildPath) || this.defaultNodes[this.height - path.length - 1];
       const rightChild = this.nodes.get(rightChildPath) || this.defaultNodes[this.height - path.length - 1];
   
-      if (leftChild.hash !== rightChild.hash) {
-        return `${indent}${prefix}${node.hash} ${path} ${node.sum}\n` +
+      if (!leftChild.hash.equals(rightChild.hash)) {
+        return `${indent}${prefix}${node.hash.toString('hex')} ${path} ${node.sum}\n` +
                `${visualize(leftChild, leftChildPath, depth + 1, '├─ ')}` +
                `${visualize(rightChild, rightChildPath, depth + 1, '└─ ')}`;
       }
       
-      return `${indent}${prefix}${node.hash} ${path} ${node.sum}\n` +
+      return `${indent}${prefix}${node.hash.toString('hex')} ${path} ${node.sum}\n` +
              `${visualize(leftChild, leftChildPath, depth + 1, '└─ ')}`;
     };
   
@@ -186,29 +230,28 @@ export class MerkleSparseSumTree {
     return visualize(this.root, rootPath, 0, '└─ ');
   }
 
-
   // Visualize the tree
   printTree() {
     console.log('Sparse Sum Merkle Tree:');
     for (let i = 0; i <= this.height; i++) {
-      const levelNodes: { hash: string, sum: BigInt }[] = [];
+      const levelNodes: { hash: Buffer, sum: BigInt }[] = [];
       const levelSize = Math.pow(2, i);
       for (let j = 0; j < levelSize; j++) {
         const path = j.toString(2).padStart(i, '0');
         const node = this.nodes.get(path) || this.defaultNodes[this.height - i];
         levelNodes.push(node);
       }
-      console.log(`Level ${i}:`, levelNodes);
+      console.log(`Level ${i}:`, levelNodes.map(node => ({ hash: node.hash.toString('hex'), sum: node.sum })));
     }
-    console.log('Root:', this.root);
+    console.log('Root:', { hash: this.root.hash.toString('hex'), sum: this.root.sum });
   }
 }
 
 // Example of a hash function
-const hashFn = (data: string): string => {
-  return createHash('sha256').update(data).digest('hex');
+const hash = (data: Buffer): Buffer => {
+  return createHash('sha256').update(data).digest();
 };
 
 if (typeof window !== 'undefined') {
-  ; (window as any).MerkleSparseSumTree = MerkleSparseSumTree
+  ; (window as any).MerkleSparseSumTree = MerkleSparseSumTree;
 }

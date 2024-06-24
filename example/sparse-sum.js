@@ -29,9 +29,8 @@ function initializeTree() {
         { path: '0111', value: 'value4', sum: 20 },
     ];
     $input.textContent = `1000, value1, 10\n1110, value2, 30\n1111, value3, 40\n0111, value4, 20`
-    leaves.forEach(function (leaf) {
-        tree.insert(leaf.path, leaf.value);
-    });
+    tree = new window.MerkleSparseSumTree(height, leaves);
+
 
     updateOutputs();
 }
@@ -67,12 +66,9 @@ function generateRandomData(numLines, height) {
 // Function to insert generated test data into the Merkle tree
 function insertGeneratedDataIntoTree(numLines, height) {
     const testData = generateRandomData(numLines, height);
-    tree = new window.MerkleSparseSumTree(height, window.sha256);
 
     const insertionTime = performance.now();
-    testData.forEach(function (leaf) {
-        tree.insert(leaf.path, leaf.value, leaf.sum);
-    });
+    tree = new window.MerkleSparseSumTree(height, testData);
     $insertionTimeOutput.textContent = `Insertion Time: ${performance.now() - insertionTime} ms`;
 }
 
@@ -90,17 +86,13 @@ $form.addEventListener('submit', function (event) {
     event.preventDefault();
     const value = $input.value.trim();
     const height = 4; // Set the height of your tree here
-    tree = new window.MerkleSparseSumTree(height, window.sha256);
 
     const leaves = value.split('\n').map(function (line) {
         const [path, hash, sum] = line.trim().split(',');
         return { path: path.trim(), value: hash.trim(), sum: BigInt(sum.trim()) };
     });
     const insertionTime = performance.now();
-    leaves.forEach(function (leaf) {
-        console.log(leaf)
-        tree.insert(leaf.path, leaf.value, leaf.sum);
-    });
+    tree = new window.MerkleSparseSumTree(height, leaves);
     $insertionTimeOutput.textContent = `Insertion Time: ${performance.now() - insertionTime} ms`;
 
     updateOutputs();
