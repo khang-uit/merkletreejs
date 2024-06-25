@@ -2,6 +2,8 @@
 var $form = document.getElementById('form')
 var $multiInputForm = document.getElementById('multiInputForm')
 var $multiInput = document.getElementById('multiInput')
+var $singleInputForm = document.getElementById('singleInputForm')
+var $singleInput = document.getElementById('singleInput')
 var $input = document.getElementById('input')
 var $options = document.querySelectorAll('input[name="option"]')
 var $fillDefaultHashView = document.getElementById('fillDefaultHashView')
@@ -88,31 +90,31 @@ function compute() {
   setVerified('-')
 }
 
-function computeMulti(numLines) {
-  function generateHexString(length = 32) {
-    let hexString = '0x';
-    for (let i = 0; i < length; i++) {
-      const randomValue = Math.floor(Math.random() * 256); // Generate a random byte (0-255)
-      const hex = randomValue.toString(16).padStart(2, '0'); // Convert to hex and pad with leading zero if necessary
-      hexString += hex;
-    }
-    return hexString;
+function generateHexString(length = 32) {
+  let hexString = '0x';
+  for (let i = 0; i < length; i++) {
+    const randomValue = Math.floor(Math.random() * 256); // Generate a random byte (0-255)
+    const hex = randomValue.toString(16).padStart(2, '0'); // Convert to hex and pad with leading zero if necessary
+    hexString += hex;
   }
+  return hexString;
+}
 
-  function generateRandomData(numLines) {
-    const testData = [];
-    for (let i = 0; i < numLines; i++) {
-      let value = generateHexString()
-      if (i == numLines - 1) {
-        {
-          console.log(value)
-        }
+function generateRandomData(numLines) {
+  const testData = [];
+  for (let i = 0; i < numLines; i++) {
+    let value = generateHexString()
+    if (i == numLines - 1) {
+      {
+        console.log(value)
       }
-      testData.push(value);
     }
-    return testData;
+    testData.push(value);
   }
+  return testData;
+}
 
+function computeMulti(numLines) {
   const testData = generateRandomData(numLines);
   const hashFn = getHashFn()
   const options = getOptions()
@@ -149,6 +151,35 @@ function computeMulti(numLines) {
   // setVerified('-')
 }
 
+function computeSingle(numLines) {
+  const testData = generateRandomData(numLines);
+  const hashFn = getHashFn()
+  const options = getOptions()
+  console.log('input leaves:', testData)
+  console.log('hash:', getHashType())
+  console.log('options:', options)
+
+  // Measure memory before
+
+  const insertionTime = performance.now();
+  const memoryBefore = performance.memory.usedJSHeapSize;
+  tree = new window.MerkleTree([], hashFn, options)
+  testData.forEach((leaf) => {
+    tree.addLeaf(leaf);
+  });
+  const memoryAfter = performance.memory.usedJSHeapSize;
+
+  $insertionTimeOutput.textContent = `Insertion Time: ${performance.now() - insertionTime} ms`;
+
+  // Measure memory after
+  const memoryUsed = memoryAfter - memoryBefore;
+  $insertionMemoryOutput.textContent = `Memory used: ${memoryUsed} bytes`;
+
+  const hexRoot = tree.getHexRoot()
+  setRootValue(hexRoot)
+  updateProof(0)
+}
+
 function getOptions() {
   const fillDefaultHash = getDefaultFillHashInput()
   return Object.assign({}, options, {
@@ -162,8 +193,12 @@ function parseInput(value) {
     return JSON.parse(value)
   } catch (err) {
     return value.split('\n')
-      .map(function (line) { return line.trim() })
-      .filter(function (line) { return line })
+      .map(function (line) {
+        return line.trim()
+      })
+      .filter(function (line) {
+        return line
+      })
   }
 }
 
@@ -379,6 +414,12 @@ $multiInputForm.addEventListener('submit', function (event) {
   event.preventDefault()
   const numLines = $multiInput.value.trim();
   computeMulti(numLines)
+})
+
+$singleInputForm.addEventListener('submit', function (event) {
+  event.preventDefault()
+  const numLines = $singleInput.value.trim();
+  computeSingle(numLines)
 })
 
 $verifyForm.addEventListener('submit', function (event) {

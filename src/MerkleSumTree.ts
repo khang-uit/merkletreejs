@@ -1,18 +1,18 @@
 import { Base } from './Base'
-import { createHash } from 'crypto';
+import { createHash } from 'crypto'
 
 // @credit: https://github.com/finalitylabs/pymst
 
 type TValue = Buffer | BigInt | string | number | null | undefined
 
 export class Bucket {
-  size: BigInt
+  size: bigint
   hashed: Buffer
   parent: Bucket | null
   left: Bucket | null
   right: Bucket | null
 
-  constructor (size: BigInt | number, hashed: Buffer) {
+  constructor (size: bigint | number, hashed: Buffer) {
     this.size = BigInt(size)
     this.hashed = hashed
 
@@ -24,20 +24,20 @@ export class Bucket {
 }
 
 export class Leaf {
-  rng: BigInt[]
+  rng: bigint[]
   data: Buffer | null
 
-  constructor (rng: (number | BigInt)[], data: string | null) {
+  constructor (rng: (number | bigint)[], data: string | null) {
     this.rng = rng.map(x => BigInt(x))
     this.data = data ? Buffer.from(data) : null
   }
 
-  private hash(data: Buffer): Buffer {
-    return createHash('sha256').update(data).digest();
+  private hash (data: Buffer): Buffer {
+    return createHash('sha256').update(data).digest()
   }
 
   getBucket () {
-    let hashed : Buffer
+    let hashed: Buffer
     if (this.data) {
       hashed = this.hash(this.data)
     } else {
@@ -53,7 +53,7 @@ export class ProofStep {
 
   constructor (bucket: Bucket, right: boolean) {
     this.bucket = bucket
-    this.right = right // whether the bucket hash should be appeded on the right side in this step (default is left
+    this.right = right // whether the bucket hash should be appended on the right side in this step (default is left)
   }
 }
 
@@ -62,75 +62,75 @@ export class MerkleSumTree extends Base {
   buckets: Bucket[];
   root: Bucket;
 
-  constructor(leaves: Leaf[]) {
-    super();
-    this.leaves = leaves;
+  constructor (leaves: Leaf[]) {
+    super()
+    this.leaves = leaves
 
-    MerkleSumTree.checkConsecutive(leaves);
+    MerkleSumTree.checkConsecutive(leaves)
 
-    this.buckets = [];
+    this.buckets = []
     for (const l of leaves) {
-      this.buckets.push(l.getBucket());
+      this.buckets.push(l.getBucket())
     }
 
-    let buckets = [];
+    let buckets = []
     for (const bucket of this.buckets) {
-      buckets.push(bucket);
+      buckets.push(bucket)
     }
 
     while (buckets.length !== 1) {
-      const newBuckets = [];
+      const newBuckets = []
       while (buckets.length) {
         if (buckets.length >= 2) {
-          const b1 = buckets.shift();
-          const b2 = buckets.shift();
-          const size = b1.size + b2.size;
+          const b1 = buckets.shift()!
+          const b2 = buckets.shift()!
+          const size = b1.size + b2.size
           const hashed = this.hash(
             Buffer.concat([
               this.sizeToBuffer(b1.size),
               this.bufferify(b1.hashed),
               this.sizeToBuffer(b2.size),
-              this.bufferify(b2.hashed),
+              this.bufferify(b2.hashed)
             ])
-          );
-          const b = new Bucket(size, hashed);
-          b2.parent = b;
-          b1.parent = b2.parent;
-          b1.right = b2;
-          b2.left = b1;
-          newBuckets.push(b);
+          )
+          const b = new Bucket(size, hashed)
+          b2.parent = b
+          b1.parent = b
+          b1.right = b2
+          b2.left = b1
+          newBuckets.push(b)
         } else {
-          newBuckets.push(buckets.shift());
+          newBuckets.push(buckets.shift()!)
         }
       }
-      buckets = newBuckets;
+      buckets = newBuckets
     }
-    this.root = buckets[0];
+    this.root = buckets[0]
   }
 
-  private hash(data: Buffer): Buffer {
-    return createHash('sha256').update(data).digest();
+  private hash (data: Buffer): Buffer {
+    return createHash('sha256').update(data).digest()
   }
 
-  sizeToBuffer(size: BigInt) {
-    const buf = Buffer.alloc(8);
-    const view = new DataView(buf.buffer);
-    view.setBigInt64(0, BigInt(size), false); // true when little endian
-    return buf;
+  sizeToBuffer (size: bigint) {
+    const buf = Buffer.alloc(8)
+    const view = new DataView(buf.buffer)
+    view.setBigInt64(0, size, false) // true when little endian
+    return buf
   }
 
-  static checkConsecutive(leaves: Leaf[]) {
-    let curr = BigInt(0);
+  static checkConsecutive (leaves: Leaf[]) {
+    let curr = BigInt(0)
     for (const leaf of leaves) {
       if (leaf.rng[0] !== curr) {
-        throw new Error('leaf ranges are invalid');
+        throw new Error('leaf ranges are invalid')
       }
-      curr = BigInt(leaf.rng[1]);
+      curr = BigInt(leaf.rng[1])
     }
   }
 
   // gets inclusion/exclusion proof of a bucket in the specified index
-  getProof (index: number | BigInt) {
+  getProof (index: number | bigint) {
     let curr = this.buckets[Number(index)]
     const proof = []
     while (curr && curr.parent) {
@@ -142,23 +142,23 @@ export class MerkleSumTree extends Base {
     return proof
   }
 
-  sum (arr: BigInt[]) {
+  sum (arr: bigint[]) {
     let total = BigInt(0)
     for (const value of arr) {
-      total += BigInt(value)
+      total += value
     }
     return total
   }
 
-  // validates the suppplied proof for a specified leaf according to the root bucket
+  // validates the supplied proof for a specified leaf according to the root bucket
   verifyProof (root: Bucket, leaf: Leaf, proof: ProofStep[]) {
     const rng = [this.sum(proof.filter(x => !x.right).map(x => x.bucket.size)), BigInt(root.size) - this.sum(proof.filter(x => x.right).map(x => x.bucket.size))]
     if (!(rng[0] === leaf.rng[0] && rng[1] === leaf.rng[1])) {
       // supplied steps are not routing to the range specified
-      return false;
+      return false
     }
-    let curr = leaf.getBucket();
-    let hashed: Buffer;
+    let curr = leaf.getBucket()
+    let hashed: Buffer
     for (const step of proof) {
       if (step.right) {
         hashed = this.hash(
@@ -166,57 +166,95 @@ export class MerkleSumTree extends Base {
             this.sizeToBuffer(curr.size),
             this.bufferify(curr.hashed),
             this.sizeToBuffer(step.bucket.size),
-            this.bufferify(step.bucket.hashed),
+            this.bufferify(step.bucket.hashed)
           ])
-        );
+        )
       } else {
         hashed = this.hash(
           Buffer.concat([
             this.sizeToBuffer(step.bucket.size),
-            this.bufferify(step.bucket.hashed), 
+            this.bufferify(step.bucket.hashed),
             this.sizeToBuffer(curr.size),
-            this.bufferify(curr.hashed),
+            this.bufferify(curr.hashed)
           ])
-        );
+        )
       }
-      curr = new Bucket(BigInt(curr.size) + BigInt(step.bucket.size), hashed);
+      curr = new Bucket(curr.size + step.bucket.size, hashed)
     }
-    return curr.size === root.size && curr.hashed.toString('hex') === root.hashed.toString('hex');
+    return curr.size === root.size && curr.hashed.toString('hex') === root.hashed.toString('hex')
   }
 
-  bufferify(buf: Buffer) {
-    return buf;
+  bufferify (buf: Buffer) {
+    return buf
   }
 
-  getLayers() {
-    const layers = [];
-    let currentLayer = this.buckets;
+  getLayers () {
+    const layers = []
+    let currentLayer = this.buckets
     while (currentLayer.length > 0) {
-      layers.push(currentLayer.map((bucket) => ({ size: bucket.size, hash: bucket.hashed.toString('hex') })));
-      const nextLayer = [];
+      layers.push(currentLayer.map((bucket) => ({ size: bucket.size, hash: bucket.hashed.toString('hex') })))
+      const nextLayer = []
       for (let i = 0; i < currentLayer.length; i += 2) {
         if (i + 1 < currentLayer.length) {
-          nextLayer.push(currentLayer[i].parent);
+          nextLayer.push(currentLayer[i].parent)
         }
       }
-      currentLayer = nextLayer;
+      currentLayer = nextLayer
     }
-    return layers;
+    return layers
   }
 
+  getTreeVisualization (): string {
+    const visualize = (bucket: Bucket | null, level = 0, isLeft = false, isRight = false): string => {
+      if (!bucket) return ''
+      const indent = '   '.repeat(level)
+      const branch = level === 0 ? '└─ ' : (isLeft ? '├─ ' : (isRight ? '└─ ' : '│  '))
+      let result = `${indent}${branch}${bucket.hashed.toString('hex')}\n`
+      if (bucket.left || bucket.right) {
+        result += visualize(bucket.left, level + 1, true, false)
+        result += visualize(bucket.right, level + 1, false, true)
+      }
+      return result
+    }
+    return visualize(this.root)
+  }
 
-  getTreeVisualization() {
-    const visualize = (bucket, level = 0) => {
-      if (!bucket) return '';
-      let result = '  '.repeat(level) + `Size: ${bucket.size}, Hash: ${bucket.hashed.toString('hex')}\n`;
-      if (bucket.left) result += visualize(bucket.left, level + 1);
-      if (bucket.right) result += visualize(bucket.right, level + 1);
-      return result;
-    };
-    return visualize(this.root);
+  insertLeaf (leaf: Leaf) {
+    // Adjust the range of the new leaf based on the last leaf's range
+    this.leaves.push(leaf)
+    this.buckets.push(leaf.getBucket())
+
+    let buckets = [...this.buckets]
+    while (buckets.length !== 1) {
+      const newBuckets = []
+      while (buckets.length) {
+        if (buckets.length >= 2) {
+          const b1 = buckets.shift()!
+          const b2 = buckets.shift()!
+          const size = b1.size + b2.size
+          const hashed = this.hash(
+            Buffer.concat([
+              this.sizeToBuffer(b1.size),
+              this.bufferify(b1.hashed),
+              this.sizeToBuffer(b2.size),
+              this.bufferify(b2.hashed)
+            ])
+          )
+          const b = new Bucket(size, hashed)
+          b2.parent = b
+          b1.parent = b
+          b1.right = b2
+          b2.left = b1
+          newBuckets.push(b)
+        } else {
+          newBuckets.push(buckets.shift()!)
+        }
+      }
+      buckets = newBuckets
+    }
+    this.root = buckets[0]
   }
 }
-
 
 if (typeof window !== 'undefined') {
   ;(window as any).MerkleSumTree = MerkleSumTree

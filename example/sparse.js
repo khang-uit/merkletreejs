@@ -2,6 +2,8 @@ var $form = document.getElementById('form');
 var $input = document.getElementById('input');
 var $multiInputForm = document.getElementById('multiInputForm');
 var $multiInput = document.getElementById('multiInput');
+var $singleInputForm = document.getElementById('singleInputForm');
+var $singleInput = document.getElementById('singleInput');
 var $verifyForm = document.getElementById('verifyForm');
 var $rootOutput = document.getElementById('rootOutput');
 var $proofOutput = document.getElementById('proofOutput');
@@ -69,7 +71,7 @@ function generateRandomData(numLines, height) {
 }
 
 // Function to insert generated test data into the Merkle tree
-function insertGeneratedDataIntoTree(numLines, height) {
+function insertMultiGeneratedDataIntoTree(numLines, height) {
     const testData = generateRandomData(numLines, height);
 
     const insertionTime = performance.now();
@@ -84,13 +86,41 @@ function insertGeneratedDataIntoTree(numLines, height) {
     $memoryUsageOutput.textContent = `Memory Usage: ${memoryUsageText}`;
 }
 
+// Function to insert generated test data into the Merkle tree
+function insertSingleGeneratedDataIntoTree(numLines, height) {
+    const testData = generateRandomData(numLines, height);
+
+    const insertionTime = performance.now();
+    const memoryBefore = getMemoryUsage();
+    tree = new window.MerkleSparseTree(height);
+    testData.forEach(function (leaf) {
+        tree.insert(leaf.path, leaf.value);
+    });
+    const memoryAfter = getMemoryUsage();
+
+    const memoryUsage = (memoryAfter !== null && memoryBefore !== null) ? (memoryAfter - memoryBefore) : 'N/A';
+    const memoryUsageText = memoryUsage >= 0 ? `${memoryUsage} bits` : `0 bits`;
+
+    $insertionTimeOutput.textContent = `Insertion Time: ${performance.now() - insertionTime} ms`;
+    $memoryUsageOutput.textContent = `Memory Usage: ${memoryUsageText}`;
+}
+
+
 // Event listener for the "Insert 1000 Lines of Test Data" button
 $multiInputForm.addEventListener('submit', function (event) {
     // Insert 1000 lines of generated data into the Merkle tree
     event.preventDefault();
     const numLines = $multiInput.value.trim();
     const height = Math.ceil(Math.log2(numLines));
-    insertGeneratedDataIntoTree(numLines, height);
+    insertMultiGeneratedDataIntoTree(numLines, height);
+});
+
+$singleInputForm.addEventListener('submit', function (event) {
+    // Insert 1000 lines of generated data into the Merkle tree
+    event.preventDefault();
+    const numLines = $singleInput.value.trim();
+    const height = Math.ceil(Math.log2(numLines));
+    insertSingleGeneratedDataIntoTree(numLines, height);
 });
 
 $form.addEventListener('submit', function (event) {
