@@ -328,7 +328,7 @@ export class MerklePatricia {
     private buildTreeStructure(node: TrieNode, indent: string): string {
         if (!node) return '';
 
-        let result = `${indent}└─ ${node.hash.toString('hex')} ${node.type === 'branch' ? JSON.stringify(node.branches.map(branch => branch ? branch.hash.toString('hex') : null)) : node.key.toString('hex')}\n`;
+        let result = `${indent}└─ ${node.hash.toString('hex')} ${node.type}\n`;
 
         if (node.type === 'branch') {
             const newIndent = indent + '   ';

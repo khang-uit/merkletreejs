@@ -17,8 +17,19 @@ document.addEventListener('DOMContentLoaded', () => {
   const $insertionTimeOutput = document.getElementById('insertionTimeOutput');
   const $proofGenerationTimeOutput = document.getElementById('proofGenerationTimeOutput');
   const $verificationTimeOutput = document.getElementById('verificationTimeOutput');
+  const $memoryUsageOutput = document.getElementById('memoryUsageOutput');
+  const $proofMemoryUsageOutput = document.getElementById('proofMemoryUsageOutput');
+  const $verificationMemoryUsageOutput = document.getElementById('verificationMemoryUsageOutput');
 
   var trie;
+
+  function getMemoryUsage() {
+    if (performance.memory) {
+      return performance.memory.usedJSHeapSize / 1024; // Convert to KB
+    } else {
+      return null;
+    }
+  }
 
   function initializeTree() {
     trie = new window.MerklePatricia();
@@ -47,15 +58,10 @@ f9365, value3
     const testData = [];
 
     for (let i = 0; i < multiKeyValuePairs; i++) {
-        
-        // Generate a random value (for demonstration, using a simple incremental value)
-        let value = 'value' + (i + 1);
-        let key = genRanHex(32)
-        if(i == multiKeyValuePairs-1){{
-            console.log(key, value)
-        }}
-        // Store the generated data as an object
-        testData.push({ key: key, value: value});
+      // Generate a random value (for demonstration, using a simple incremental value)
+      let value = 'value' + (i + 1);
+      let key = genRanHex(32);
+      testData.push({ key: key, value: value });
     }
 
     return testData;
@@ -66,13 +72,17 @@ f9365, value3
     trie = new window.MerklePatricia();
 
     const insertionTime = performance.now();
+    const memoryBefore = getMemoryUsage();
     testData.forEach(function (leaf) {
-        trie.put(leaf.key, leaf.value);
+      trie.put(leaf.key, leaf.value);
     });
-    $insertionTimeOutput.textContent = `Insertion Time: ${performance.now() - insertionTime} ms`;
-    console.log(trie.rootHash)
-}
+    const memoryAfter = getMemoryUsage();
+    const memoryUsage = (memoryAfter !== null && memoryBefore !== null) ? (memoryAfter - memoryBefore) : 'N/A';
+    const memoryUsageText = memoryUsage >= 0 ? `${memoryUsage} KB` : `0 KB`;
 
+    $insertionTimeOutput.textContent = `Insertion Time: ${performance.now() - insertionTime} ms`;
+    $memoryUsageOutput.textContent = `Memory Usage: ${memoryUsageText}`;
+  }
 
   $form.addEventListener('submit', (event) => {
     event.preventDefault();
@@ -80,10 +90,16 @@ f9365, value3
     const keyValuePairs = document.getElementById('keyValuePairs').value.trim();
     const pairs = keyValuePairs.split('\n').map(line => line.trim().split(','));
     const insertionTime = performance.now();
+    const memoryBefore = getMemoryUsage();
     pairs.forEach(([key, value]) => {
       trie.put(key.trim(), value.trim());
     });
+    const memoryAfter = getMemoryUsage();
+    const memoryUsage = (memoryAfter !== null && memoryBefore !== null) ? (memoryAfter - memoryBefore) : 'N/A';
+    const memoryUsageText = memoryUsage >= 0 ? `${memoryUsage} KB` : `0 KB`;
+
     $insertionTimeOutput.textContent = `Insertion Time: ${performance.now() - insertionTime} ms`;
+    $memoryUsageOutput.textContent = `Memory Usage: ${memoryUsageText}`;
     updateRootOutput();
     updateVisualizations();
   });
@@ -105,9 +121,15 @@ f9365, value3
     event.preventDefault();
     const key = document.getElementById('proofKey').value.trim();
     const proofGeneration = performance.now();
+    const memoryBefore = getMemoryUsage();
     const proof = trie.generateProof(key);
+    const memoryAfter = getMemoryUsage();
+    const memoryUsage = (memoryAfter !== null && memoryBefore !== null) ? (memoryAfter - memoryBefore) : 'N/A';
+    const memoryUsageText = memoryUsage >= 0 ? `${memoryUsage} KB` : `0 KB`;
+
     $proofGenerationTimeOutput.textContent = `Proof Time: ${performance.now() - proofGeneration} ms`;
-    // $proofOutput.textContent = JSON.stringify(proof, null, 2);
+    $proofOutput.textContent = JSON.stringify(proof, null, 2);
+    $proofMemoryUsageOutput.textContent = `Memory Usage: ${memoryUsageText}`;
   });
 
   $verifyForm.addEventListener('submit', (event) => {
@@ -115,11 +137,17 @@ f9365, value3
     const key = document.getElementById('verifyKey').value.trim();
     const value = document.getElementById('verifyValue').value.trim();
     const rootHash = document.getElementById('rootHash').value.trim();
+    const proof = trie.generateProof(key);
     const verifyGeneration = performance.now();
-    const proof = trie.generateProof(key)
+    const memoryBefore = getMemoryUsage();
     const isValid = trie.verifyProof(rootHash, key, proof);
+    const memoryAfter = getMemoryUsage();
+    const memoryUsage = (memoryAfter !== null && memoryBefore !== null) ? (memoryAfter - memoryBefore) : 'N/A';
+    const memoryUsageText = memoryUsage >= 0 ? `${memoryUsage} KB` : `0 KB`;
+
     $verifyOutput.textContent = `Verification: ${isValid}`;
-    $verificationTimeOutput.textContent = `Verification Time: ${performance.now() - verifyGeneration} ms`
+    $verificationTimeOutput.textContent = `Verification Time: ${performance.now() - verifyGeneration} ms`;
+    $verificationMemoryUsageOutput.textContent = `Memory Usage: ${memoryUsageText}`;
   });
 
   function updateRootOutput() {
@@ -140,4 +168,3 @@ f9365, value3
 
   window.addEventListener('DOMContentLoaded', initializeTree);
 });
-

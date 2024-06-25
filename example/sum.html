@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Merkle Sum Tree Example</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+        }
+
+        form {
+            margin-bottom: 1rem;
+        }
+
+        pre {
+            white-space: pre-wrap;
+            background-color: #f0f0f0;
+            padding: 0.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Merkle Sum Tree Example</h1>
+
+    <div>
+        <h2>Input</h2>
+        <form id="form">
+            <label for="input">Leaves (one per line)</label><br>
+            <textarea id="input" rows="5" cols="50"></textarea><br>
+            <button type="submit">Compute Tree</button>
+        </form>
+        <form id="multiInputForm">
+            <label for="multiInput">Number lines of test</label><br>
+            <input id="multiInput"></input><br>
+            <button type="submit">Insert Test Data</button>
+        </form>
+        <div>
+            <h3>Insertion Time</h3>
+            <pre id="insertionTimeOutput"></pre>
+        </div>
+        <div>
+            <label for="memoryUsageOutput">Memory Usage:</label>
+            <span id="memoryUsageOutput"></span>
+        </div>
+    </div>
+
+    <div>
+        <h2>Verification</h2>
+        <form id="verifyForm">
+            <label for="verifyIndex">Index to Verify</label><br>
+            <input type="text" id="verifyIndex"><br>
+            <label for="verifyPath">Path to Verify</label><br>
+            <input type="text" id="verifyPath"><br>
+            <label for="verifyValue">Value to Verify</label><br>
+            <input type="text" id="verifyValue"><br>
+            <button type="submit">Verify</button>
+        </form>
+
+        <div>
+            <h3>Verification Time</h3>
+            <pre id="verificationTimeOutput"></pre>
+        </div>
+        <div>
+            <label for="verificationMemoryUsageOutput">Verification Memory Usage:</label>
+            <span id="verificationMemoryUsageOutput"></span>
+        </div>
+        <div>
+            <h3>Verification Result</h3>
+            <pre id="verifyOutput"></pre>
+            <h3>Proof</h3>
+            <pre id="proofOutput"></pre>
+        </div>
+    </div>
+
+    <div>
+        <h2>Proof</h2>
+        <form id="proofForm">
+            <div>
+                <label>Leaf Path</label>
+                <div>
+                    <input type="text" id="leafInput" placeholder="Enter leaf path">
+                </div>
+            </div>
+            <div>
+                <label>Proof</label>
+                <pre id="proof"></pre>
+            </div>
+            <button type="submit">Get proof</button>
+        </form>
+        <div>
+            <h3>Proof Generation Time</h3>
+            <pre id="proofGenerationTimeOutput"></pre>
+        </div>
+        <div>
+            <label for="proofMemoryUsageOutput">Proof Memory Usage:</label>
+            <span id="proofMemoryUsageOutput"></span>
+        </div>
+    </div>
+
+    <div>
+        <h2>Output</h2>
+        <div>
+            <h3>Root</h3>
+            <pre id="rootOutput"></pre>
+        </div>
+        <div>
+            <h3>Layers</h3>
+            <pre id="layersOutput"></pre>
+        </div>
+        <div>
+            <h3>Flat Layers</h3>
+            <pre id="flatLayersOutput"></pre>
+        </div>
+        <div>
+            <h3>Tree Visualization</h3>
+            <pre id="treeVisualization"></pre>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sha256/0.9.0/sha256.min.js"></script>
+    <script type="module" src="merkletree.js"></script>
+    <script type="module" src="sum.js"></script>
+</body>
+
+</html>

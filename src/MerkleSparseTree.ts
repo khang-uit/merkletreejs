@@ -203,7 +203,7 @@ export class MerkleSparseTree extends Base {
       const hash = this.nodes.get(path) || this.defaultNodes[this.height - path.length];
 
       if (path.length === this.height) {
-        return `${indent}${prefix}${hash.toString('hex')}\n`;
+        return `${indent}${prefix}${hash.toString('hex')} ${path}\n`;
       }
 
       const leftChildPath = path + '0';
@@ -212,12 +212,12 @@ export class MerkleSparseTree extends Base {
       const rightChild = this.nodes.get(rightChildPath) || this.defaultNodes[this.height - path.length - 1];
 
       if (!leftChild.equals(rightChild)) {
-        return `${indent}${prefix}${hash.toString('hex')}\n` +
+        return `${indent}${prefix}${hash.toString('hex')} ${path}\n` +
           visualize(leftChildPath, depth + 1, '├─ ') +
           visualize(rightChildPath, depth + 1, '└─ ');
       }
 
-      return `${indent}${prefix}${hash.toString('hex')}\n` +
+      return `${indent}${prefix}${hash.toString('hex')} ${path}\n` +
         visualize(leftChildPath, depth + 1, '└─ ');
     };
 

@@ -1,8 +1,7 @@
-// MerkleSparseTree.js
 var $form = document.getElementById('form');
 var $input = document.getElementById('input');
 var $multiInputForm = document.getElementById('multiInputForm');
-var $multiInput = document.getElementById('multiInput')
+var $multiInput = document.getElementById('multiInput');
 var $verifyForm = document.getElementById('verifyForm');
 var $rootOutput = document.getElementById('rootOutput');
 var $proofOutput = document.getElementById('proofOutput');
@@ -15,12 +14,23 @@ var $treeVisualization = document.getElementById('treeVisualization');
 var $insertionTimeOutput = document.getElementById('insertionTimeOutput');
 var $proofGenerationTimeOutput = document.getElementById('proofGenerationTimeOutput');
 var $verificationTimeOutput = document.getElementById('verificationTimeOutput');
+var $memoryUsageOutput = document.getElementById('memoryUsageOutput');
+var $proofMemoryUsageOutput = document.getElementById('proofMemoryUsageOutput');
+var $verificationMemoryUsageOutput = document.getElementById('verificationMemoryUsageOutput');
 
 var tree;
 
+function getMemoryUsage() {
+    if (performance.memory) {
+        return performance.memory.usedJSHeapSize / 1024; // Convert to KB
+    } else {
+        return null;
+    }
+}
+
 function initializeTree() {
     const height = 4; // Set the height of your tree here
-    tree = new window.MerkleSparseTree(height);
+    tree = new window.MerkleSparseSumTree(height);
 
     const leaves = [
         { path: '1000', value: 'value1', sum: 10 },
@@ -31,11 +41,8 @@ function initializeTree() {
     $input.textContent = `1000, value1, 10\n1110, value2, 30\n1111, value3, 40\n0111, value4, 20`
     tree = new window.MerkleSparseSumTree(height, leaves);
 
-
     updateOutputs();
 }
-
-// Add this after the `initializeTree` function in your JavaScript
 
 // Function to generate random leaf paths and values
 function generateRandomData(numLines, height) {
@@ -52,10 +59,7 @@ function generateRandomData(numLines, height) {
         
         // Generate a random value (for demonstration, using a simple incremental value)
         let value = 'value' + (i + 1);
-        let sum = 10
-        if(i==numLines-1){{
-            console.log(path, value, sum)
-        }}
+        let sum = 10;
         // Store the generated data as an object
         testData.push({ path: path, value: value, sum: BigInt(sum) });
     }
@@ -68,8 +72,15 @@ function insertGeneratedDataIntoTree(numLines, height) {
     const testData = generateRandomData(numLines, height);
 
     const insertionTime = performance.now();
+    const memoryBefore = getMemoryUsage();
     tree = new window.MerkleSparseSumTree(height, testData);
+    const memoryAfter = getMemoryUsage();
+
+    const memoryUsage = (memoryAfter !== null && memoryBefore !== null) ? (memoryAfter - memoryBefore) : 'N/A';
+    const memoryUsageText = memoryUsage >= 0 ? `${memoryUsage} KB` : `0 KB`;
+
     $insertionTimeOutput.textContent = `Insertion Time: ${performance.now() - insertionTime} ms`;
+    $memoryUsageOutput.textContent = `Memory Usage: ${memoryUsageText}`;
 }
 
 // Event listener for the "Insert 1000 Lines of Test Data" button
@@ -81,7 +92,6 @@ $multiInputForm.addEventListener('submit', function (event) {
     insertGeneratedDataIntoTree(numLines, height);
 });
 
-
 $form.addEventListener('submit', function (event) {
     event.preventDefault();
     const value = $input.value.trim();
@@ -92,8 +102,15 @@ $form.addEventListener('submit', function (event) {
         return { path: path.trim(), value: hash.trim(), sum: BigInt(sum.trim()) };
     });
     const insertionTime = performance.now();
+    const memoryBefore = getMemoryUsage();
     tree = new window.MerkleSparseSumTree(height, leaves);
+    const memoryAfter = getMemoryUsage();
+
+    const memoryUsage = (memoryAfter !== null && memoryBefore !== null) ? (memoryAfter - memoryBefore) : 'N/A';
+    const memoryUsageText = memoryUsage >= 0 ? `${memoryUsage} KB` : `0 KB`;
+
     $insertionTimeOutput.textContent = `Insertion Time: ${performance.now() - insertionTime} ms`;
+    $memoryUsageOutput.textContent = `Memory Usage: ${memoryUsageText}`;
 
     updateOutputs();
 });
@@ -104,15 +121,22 @@ document.getElementById('proofForm').addEventListener('submit', function (event)
     const path = $leafInput.value.trim();
 
     const proofGeneration = performance.now();
+    const memoryBefore = getMemoryUsage();
     if (tree && path) {
         const proof = tree.generateProof(path);
+        const memoryAfter = getMemoryUsage();
+        const memoryUsage = (memoryAfter !== null && memoryBefore !== null) ? (memoryAfter - memoryBefore) : 'N/A';
+        const memoryUsageText = memoryUsage >= 0 ? `${memoryUsage} KB` : `0 KB`;
+
         $proof.textContent = JSON.stringify(proof, (key, value) =>
             typeof value === 'bigint' ? value.toString() : value, 2);
+        $proofGenerationTimeOutput.textContent = `Proof Time: ${performance.now() - proofGeneration} ms`;
+        $proofMemoryUsageOutput.textContent = `Memory Usage: ${memoryUsageText}`;
     } else {
         $proof.textContent = 'Invalid leaf path or tree not initialized';
+        $proofGenerationTimeOutput.textContent = `Proof Time: ${performance.now() - proofGeneration} ms`;
+        $proofMemoryUsageOutput.textContent = 'Memory Usage: N/A';
     }
-    $proofGenerationTimeOutput.textContent = `Proof Time: ${performance.now() - proofGeneration} ms`;
-
 });
 
 $verifyForm.addEventListener('submit', function (event) {
@@ -124,14 +148,21 @@ $verifyForm.addEventListener('submit', function (event) {
     const path = document.getElementById('verifyPath').value.trim();
     const value = document.getElementById('verifyValue').value.trim();
     const sum = BigInt(document.getElementById('verifySum').value.trim());
-    const verifyGeneration = performance.now();
     const proof = tree.generateProof(path);
     const root = tree.getRoot();
+    const verifyGeneration = performance.now();
+    const memoryBefore = getMemoryUsage();
     const isValid = tree.verifyProof(path, value, sum, proof, root);
+    const memoryAfter = getMemoryUsage();
+
+    const memoryUsage = (memoryAfter !== null && memoryBefore !== null) ? (memoryAfter - memoryBefore) : 'N/A';
+    const memoryUsageText = memoryUsage >= 0 ? `${memoryUsage} KB` : `0 KB`;
+
     $verifyOutput.textContent = `Verification: ${isValid}`;
     $proofOutput.textContent = `Proof: ${JSON.stringify(proof, (key, value) =>
         typeof value === 'bigint' ? value.toString() : value, 2)}`;
-    $verificationTimeOutput.textContent = `Verification Time: ${performance.now() - verifyGeneration} ms`
+    $verificationTimeOutput.textContent = `Verification Time: ${performance.now() - verifyGeneration} ms`;
+    $verificationMemoryUsageOutput.textContent = `Memory Usage: ${memoryUsageText}`;
 });
 
 function updateOutputs() {

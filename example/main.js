@@ -23,6 +23,8 @@ var $verified = document.getElementById('verified')
 var $insertionTimeOutput = document.getElementById('insertionTimeOutput');
 var $proofGenerationTimeOutput = document.getElementById('proofGenerationTimeOutput');
 var $verificationTimeOutput = document.getElementById('verificationTimeOutput');
+var $insertionMemoryOutput = document.getElementById('insertionMemoryOutput');
+
 
 
 // variables
@@ -45,6 +47,8 @@ var tree
 
 // functions
 
+// functions
+
 function compute() {
   const value = getInputValue()
   const leaves = parseInput(value)
@@ -53,9 +57,19 @@ function compute() {
   console.log('input leaves:', leaves)
   console.log('hash:', getHashType())
   console.log('options:', options)
+
+  // Measure memory before
+
   const insertionTime = performance.now();
+  const memoryBefore = performance.memory.usedJSHeapSize;
   tree = new window.MerkleTree(leaves, hashFn, options)
+  const memoryAfter = performance.memory.usedJSHeapSize;
   $insertionTimeOutput.textContent = `Insertion Time: ${performance.now() - insertionTime} ms`;
+
+  // Measure memory after
+  const memoryUsed = memoryAfter - memoryBefore;
+  $insertionMemoryOutput.textContent = `Memory used: ${memoryUsed} bytes`;
+
   const hexRoot = tree.getHexRoot()
   const hexLeaves = tree.getHexLeaves()
   const hexLayers = tree.getHexLayers()
@@ -78,12 +92,13 @@ function computeMulti(numLines) {
   function generateHexString(length = 32) {
     let hexString = '0x';
     for (let i = 0; i < length; i++) {
-        const randomValue = Math.floor(Math.random() * 256); // Generate a random byte (0-255)
-        const hex = randomValue.toString(16).padStart(2, '0'); // Convert to hex and pad with leading zero if necessary
-        hexString += hex;
+      const randomValue = Math.floor(Math.random() * 256); // Generate a random byte (0-255)
+      const hex = randomValue.toString(16).padStart(2, '0'); // Convert to hex and pad with leading zero if necessary
+      hexString += hex;
     }
     return hexString;
-}
+  }
+
   function generateRandomData(numLines) {
     const testData = [];
     for (let i = 0; i < numLines; i++) {
@@ -104,12 +119,22 @@ function computeMulti(numLines) {
   console.log('input leaves:', testData)
   console.log('hash:', getHashType())
   console.log('options:', options)
+
+  // Measure memory before
+
   const insertionTime = performance.now();
   // testData.forEach((leaf) => {
   //   tree.addLeaf(leaf);
+  const memoryBefore = performance.memory.usedJSHeapSize;
   tree = new window.MerkleTree(testData, hashFn, options)
+  const memoryAfter = performance.memory.usedJSHeapSize;
 
   $insertionTimeOutput.textContent = `Insertion Time: ${performance.now() - insertionTime} ms`;
+
+  // Measure memory after
+  const memoryUsed = memoryAfter - memoryBefore;
+  $insertionMemoryOutput.textContent = `Memory used: ${memoryUsed} bytes`;
+
   const hexRoot = tree.getHexRoot()
   // const hexLeaves = tree.getHexLeaves()
   // const hexLayers = tree.getHexLayers()
