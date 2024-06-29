@@ -27,7 +27,13 @@ var $proofGenerationTimeOutput = document.getElementById('proofGenerationTimeOut
 var $verificationTimeOutput = document.getElementById('verificationTimeOutput');
 var $insertionMemoryOutput = document.getElementById('insertionMemoryOutput');
 
-
+function getMemoryUsage() {
+  if (performance.memory) {
+      return performance.memory.usedJSHeapSize * 8; // Convert to bits
+  } else {
+      return null;
+  }
+}
 
 // variables
 
@@ -56,22 +62,20 @@ function compute() {
   const leaves = parseInput(value)
   const hashFn = getHashFn()
   const options = getOptions()
-  console.log('input leaves:', leaves)
   console.log('hash:', getHashType())
   console.log('options:', options)
 
   // Measure memory before
 
   const insertionTime = performance.now();
-  const memoryBefore = performance.memory.usedJSHeapSize;
+  const memoryBefore = getMemoryUsage();
   tree = new window.MerkleTree(leaves, hashFn, options)
-  const memoryAfter = performance.memory.usedJSHeapSize;
+  const memoryAfter = getMemoryUsage();
+  const memoryUsage = (memoryAfter !== null && memoryBefore !== null) ? (memoryAfter - memoryBefore) : 'N/A';
+  $insertionMemoryOutput.textContent = `Memory Usage: ${memoryUsage}`;
   $insertionTimeOutput.textContent = `Insertion Time: ${performance.now() - insertionTime} ms`;
 
   // Measure memory after
-  const memoryUsed = memoryAfter - memoryBefore;
-  $insertionMemoryOutput.textContent = `Memory used: ${memoryUsed} bytes`;
-
   const hexRoot = tree.getHexRoot()
   const hexLeaves = tree.getHexLeaves()
   const hexLayers = tree.getHexLayers()
@@ -124,18 +128,23 @@ function computeMulti(numLines) {
 
   // Measure memory before
 
-  const insertionTime = performance.now();
   // testData.forEach((leaf) => {
   //   tree.addLeaf(leaf);
-  const memoryBefore = performance.memory.usedJSHeapSize;
+  const insertionTime = performance.now();
+
+
+
+  const memoryBefore = getMemoryUsage();
   tree = new window.MerkleTree(testData, hashFn, options)
-  const memoryAfter = performance.memory.usedJSHeapSize;
+  const memoryAfter = getMemoryUsage();
+  const memoryUsage = (memoryAfter !== null && memoryBefore !== null) ? (memoryAfter - memoryBefore) : 'N/A';
+  const memoryUsageText = memoryUsage >= 0 ? `${memoryUsage} bits` : `0 bits`;
 
   $insertionTimeOutput.textContent = `Insertion Time: ${performance.now() - insertionTime} ms`;
+  $insertionMemoryOutput.textContent = `Memory Usage: ${memoryUsageText}`;
+
 
   // Measure memory after
-  const memoryUsed = memoryAfter - memoryBefore;
-  $insertionMemoryOutput.textContent = `Memory used: ${memoryUsed} bytes`;
 
   const hexRoot = tree.getHexRoot()
   // const hexLeaves = tree.getHexLeaves()
@@ -155,7 +164,6 @@ function computeSingle(numLines) {
   const testData = generateRandomData(numLines);
   const hashFn = getHashFn()
   const options = getOptions()
-  console.log('input leaves:', testData)
   console.log('hash:', getHashType())
   console.log('options:', options)
 
@@ -164,7 +172,10 @@ function computeSingle(numLines) {
   const insertionTime = performance.now();
   const memoryBefore = performance.memory.usedJSHeapSize;
   tree = new window.MerkleTree([], hashFn, options)
+  let i = 0;
   testData.forEach((leaf) => {
+    i++
+    console.log(i)
     tree.addLeaf(leaf);
   });
   const memoryAfter = performance.memory.usedJSHeapSize;

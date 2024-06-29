@@ -24,7 +24,7 @@ var tree;
 
 function getMemoryUsage() {
   if (performance.memory) {
-    return performance.memory.usedJSHeapSize / 1024; // Convert to KB
+    return performance.memory.usedJSHeapSize * 8; // Convert to KB
   } else {
     return null;
   }

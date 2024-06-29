@@ -152,7 +152,7 @@ document.getElementById('proofForm').addEventListener('submit', function (event)
     const memoryUsage = (memoryAfter !== null && memoryBefore !== null) ? (memoryAfter - memoryBefore) : 'N/A';
     const memoryUsageText = memoryUsage >= 0 ? `${memoryUsage} bits` : `0 bits`;
 
-    $proof.textContent = JSON.stringify(proof, replacer, 2);
+    // $proof.textContent = JSON.stringify(proof, replacer, 2);
     $proofGenerationTimeOutput.textContent = `Proof Time: ${performance.now() - proofGeneration} ms`;
     $proofMemoryUsageOutput.textContent = `Memory Usage: ${memoryUsageText}`;
   } else {
@@ -174,10 +174,8 @@ $verifyForm.addEventListener('submit', function (event) {
   const proofGeneration = performance.now();
   const memoryBefore = getMemoryUsage();
   const proof = tree.getProof(index);
-  console.log(proof)
   const root = tree.root;
   const leaf = new window.MerkleSumTreeLeaf([path, path + BigInt(1000)], value);
-  console.log(leaf)
   const isValid = tree.verifyProof(root, leaf, proof);
   const memoryAfter = getMemoryUsage();
 
@@ -203,7 +201,6 @@ function updateOutputs() {
 
   // Assuming you have a method to visualize the tree if needed
   const treeVisualization = tree.getTreeVisualization();
-  console.log(treeVisualization);
   $treeVisualization.textContent = treeVisualization;
 }
 

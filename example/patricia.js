@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function getMemoryUsage() {
     if (performance.memory) {
-      return performance.memory.usedJSHeapSize / 1024; // Convert to KB
+      return performance.memory.usedJSHeapSize * 8; // Convert to KB
     } else {
       return null;
     }
@@ -61,6 +61,9 @@ f9365, value3
       // Generate a random value (for demonstration, using a simple incremental value)
       let value = 'value' + (i + 1);
       let key = genRanHex(32);
+      if(i==multiKeyValuePairs - 1){
+        console.log(key, value)
+      }
       testData.push({ key: key, value: value });
     }
 
@@ -78,8 +81,8 @@ f9365, value3
     });
     const memoryAfter = getMemoryUsage();
     const memoryUsage = (memoryAfter !== null && memoryBefore !== null) ? (memoryAfter - memoryBefore) : 'N/A';
-    const memoryUsageText = memoryUsage >= 0 ? `${memoryUsage} KB` : `0 KB`;
-
+    const memoryUsageText = memoryUsage >= 0 ? `${memoryUsage} bits` : `0 bits`;
+    updateRootOutput()
     $insertionTimeOutput.textContent = `Insertion Time: ${performance.now() - insertionTime} ms`;
     $memoryUsageOutput.textContent = `Memory Usage: ${memoryUsageText}`;
   }
@@ -96,7 +99,7 @@ f9365, value3
     });
     const memoryAfter = getMemoryUsage();
     const memoryUsage = (memoryAfter !== null && memoryBefore !== null) ? (memoryAfter - memoryBefore) : 'N/A';
-    const memoryUsageText = memoryUsage >= 0 ? `${memoryUsage} KB` : `0 KB`;
+    const memoryUsageText = memoryUsage >= 0 ? `${memoryUsage} bits` : `0 bits`;
 
     $insertionTimeOutput.textContent = `Insertion Time: ${performance.now() - insertionTime} ms`;
     $memoryUsageOutput.textContent = `Memory Usage: ${memoryUsageText}`;
@@ -128,7 +131,6 @@ f9365, value3
     const memoryUsageText = memoryUsage >= 0 ? `${memoryUsage} KB` : `0 KB`;
 
     $proofGenerationTimeOutput.textContent = `Proof Time: ${performance.now() - proofGeneration} ms`;
-    $proofOutput.textContent = JSON.stringify(proof, null, 2);
     $proofMemoryUsageOutput.textContent = `Memory Usage: ${memoryUsageText}`;
   });
 
@@ -136,7 +138,7 @@ f9365, value3
     event.preventDefault();
     const key = document.getElementById('verifyKey').value.trim();
     const value = document.getElementById('verifyValue').value.trim();
-    const rootHash = document.getElementById('rootHash').value.trim();
+    const rootHash = trie.rootHash
     const proof = trie.generateProof(key);
     const verifyGeneration = performance.now();
     const memoryBefore = getMemoryUsage();
@@ -144,7 +146,6 @@ f9365, value3
     const memoryAfter = getMemoryUsage();
     const memoryUsage = (memoryAfter !== null && memoryBefore !== null) ? (memoryAfter - memoryBefore) : 'N/A';
     const memoryUsageText = memoryUsage >= 0 ? `${memoryUsage} KB` : `0 KB`;
-
     $verifyOutput.textContent = `Verification: ${isValid}`;
     $verificationTimeOutput.textContent = `Verification Time: ${performance.now() - verifyGeneration} ms`;
     $verificationMemoryUsageOutput.textContent = `Memory Usage: ${memoryUsageText}`;
